@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Open data – Introduction to R</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-94ab712f215f0f28cf75fcc61d4e0fd5.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar docked">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./part1_data.html">Open data</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Introduction to R</a> 
+    </div>
+      </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Home</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./part0_r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">First hand on R</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./part1_data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Open data</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./part2_desc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Descriptive statistics</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./part3_viz.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data visualisation</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./part5_debug.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Debugging clinic</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./part4_spatial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Spatial data</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+   
+  <ul>
+  <li><a href="#roadmap" id="toc-roadmap" class="nav-link active" data-scroll-target="#roadmap">Roadmap</a></li>
+  <li><a href="#open-datasets" id="toc-open-datasets" class="nav-link" data-scroll-target="#open-datasets">Open datasets</a>
+  <ul class="collapse">
+  <li><a href="#data-format" id="toc-data-format" class="nav-link" data-scroll-target="#data-format">Data format</a></li>
+  <li><a href="#open-data-in-r" id="toc-open-data-in-r" class="nav-link" data-scroll-target="#open-data-in-r">Open data in R</a></li>
+  <li><a href="#write-data" id="toc-write-data" class="nav-link" data-scroll-target="#write-data">Write data</a></li>
+  <li><a href="#use-a-paste" id="toc-use-a-paste" class="nav-link" data-scroll-target="#use-a-paste">Use a <code>paste()</code></a></li>
+  <li><a href="#discover-the-data" id="toc-discover-the-data" class="nav-link" data-scroll-target="#discover-the-data">Discover the data</a></li>
+  </ul></li>
+  <li><a href="#data-cleaning" id="toc-data-cleaning" class="nav-link" data-scroll-target="#data-cleaning">Data cleaning</a></li>
+  <li><a href="#data-manipulation" id="toc-data-manipulation" class="nav-link" data-scroll-target="#data-manipulation">Data manipulation</a>
+  <ul class="collapse">
+  <li><a href="#merge-datasets" id="toc-merge-datasets" class="nav-link" data-scroll-target="#merge-datasets">Merge datasets</a></li>
+  <li><a href="#reshape-datasets" id="toc-reshape-datasets" class="nav-link" data-scroll-target="#reshape-datasets">Reshape datasets</a></li>
+  <li><a href="#other-manipulations" id="toc-other-manipulations" class="nav-link" data-scroll-target="#other-manipulations">Other manipulations</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Open data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="roadmap" class="level2">
+<h2 class="anchored" data-anchor-id="roadmap">Roadmap</h2>
+<p>In this section, we are going to learn how to:</p>
+<ul>
+<li>Open datasets</li>
+<li>Perform simple data cleaning tasks</li>
+<li>Merge datasets, and check the merge before believing it</li>
+</ul>
+</section>
+<section id="open-datasets" class="level2">
+<h2 class="anchored" data-anchor-id="open-datasets">Open datasets</h2>
+<section id="data-format" class="level3">
+<h3 class="anchored" data-anchor-id="data-format">Data format</h3>
+<p>As you may know, data come in various formats. Here are some common formats. The last column is about read speed and file size on large datasets, not about how good the format is in general.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Extension</th>
+<th>Format</th>
+<th>Description</th>
+<th>Speed on large files</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>.csv</code></td>
+<td>CSV</td>
+<td>Comma-separated values</td>
+<td>⭐⭐</td>
+</tr>
+<tr class="even">
+<td><code>.tsv</code></td>
+<td>TSV</td>
+<td>Tab-separated values</td>
+<td>⭐⭐</td>
+</tr>
+<tr class="odd">
+<td><code>.xlsx</code></td>
+<td>XLSX</td>
+<td>Excel spreadsheet</td>
+<td>⭐</td>
+</tr>
+<tr class="even">
+<td><code>.RData</code></td>
+<td>RData</td>
+<td>R’s own format</td>
+<td>⭐⭐⭐</td>
+</tr>
+<tr class="odd">
+<td><code>.json</code></td>
+<td>JSON</td>
+<td>Nested, web-oriented</td>
+<td>⭐⭐</td>
+</tr>
+<tr class="even">
+<td><code>.parquet</code></td>
+<td>PARQUET</td>
+<td>Columnar storage</td>
+<td>⭐⭐⭐⭐⭐</td>
+</tr>
+</tbody>
+</table>
+<p>Many other formats exist, depending on the source or the type of data stored (eg, spatial data). Note that SQL is a database <em>system</em> rather than a file format, and you query it rather than open it, with the <code>DBI</code> package.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Speed is not the only criterion, and usually not the main one. A <code>.csv</code> can be opened by anything, forever, including by a co-author who does not use R. A <code>.RData</code> file cannot. For anything you intend to share or archive, prefer <code>.csv</code>. For a 20 GB intermediate file that only your own code will ever read, use <code>.parquet</code>.</p>
+</div>
+</div>
+</section>
+<section id="open-data-in-r" class="level3">
+<h3 class="anchored" data-anchor-id="open-data-in-r">Open data in R</h3>
+<p>We are going to manipulate mostly <code>.csv</code> databases. They are non-proprietary and can be opened by virtually all software. This is not the most efficient way to store data. If you manipulate <em>very</em> large databases (tens of millions of observations with hundreds of columns), I advise you to use <code>.parquet</code>.</p>
+<p>Base R includes functions to open <code>.csv</code> files: <code>read.csv()</code> and <code>read.csv2()</code>. Some packages might be required to open other formats. To open a large <code>.csv</code> dataset, I advise you to use the <code>fread()</code> function from the package <code>data.table</code>.</p>
+<p>The syntax is:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">read.csv2</span>(<span class="at">file =</span> <span class="st">"C:/your/path/data_to_open.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The first silent failure of this course
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>read.csv()</code> expects a <strong>point</strong> as the decimal separator and a <strong>comma</strong> as the field separator. <code>read.csv2()</code> expects a <strong>comma</strong> as the decimal separator and a <strong>semicolon</strong> as the field separator. French data, and INSEE data in particular, are usually the second kind.</p>
+<p>Use the wrong one and R does not complain. It just reads your numeric column as text. Then <code>log(rent)</code> throws <code>non-numeric argument to binary operator</code> three scripts later, and you have no idea why.</p>
+<p><strong>So: run <code>str(data)</code> immediately after every import.</strong> Every column that should be a number must show <code>num</code> or <code>int</code>. If it shows <code>chr</code>, you used the wrong reader. This takes two seconds and it will save you an afternoon at least once this year.</p>
+</div>
+</div>
+</section>
+<section id="write-data" class="level3">
+<h3 class="anchored" data-anchor-id="write-data">Write data</h3>
+<p>Once you are done cleaning the data, you might want to save your dataset (this is actually good practice!). Most functions to read data have a writing counterpart. Hence:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv2</span>(data, <span class="at">file =</span> <span class="st">"C:/your/path/name_of_the_dataset.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note <code>row.names = FALSE</code>. Without it, R writes an extra unnamed column containing 1, 2, 3, … and when you read the file back you get a mysterious column called <code>X</code>. Every R user has met it. Now you know where it comes from.</p>
+</section>
+<section id="use-a-paste" class="level3">
+<h3 class="anchored" data-anchor-id="use-a-paste">Use a <code>paste()</code></h3>
+<p>You might want to save a bit of time, reduce the probability of writing errors, and increase the reliability and reproducibility of your code by using a <code>path</code> object within a <code>paste()</code> function. This function, from base R, simply concatenates strings. For instance <code>paste("Hello", "world", sep = " ")</code> will produce <code>"Hello world"</code>. An alternative function is <code>paste0()</code>, which by default concatenates without a space. Hence <code>paste("Hello", "world", sep = "")</code> and <code>paste0("Hello", "world")</code> are strictly equivalent and print <code>Helloworld</code>.</p>
+<p>It comes in handy with the <code>read.csv2()</code> and <code>write.csv2()</code> functions. Instead of rewriting the full path each time, you can call the <code>path</code> object you created earlier. If the dataset <code>idf_data.csv</code> is stored in the subfolder <code>/raw_data</code>, it is easy to open it:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">"C:/Users/mateomoglia/Dropbox/courses/polytechnique/2027_eco51432ep"</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>data <span class="ot">=</span> <span class="fu">read.csv2</span>(<span class="at">file =</span> <span class="fu">paste0</span>(path, <span class="st">"/raw_data/idf_data.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>It is useful if you share code with someone. They need to change only the line with the path, instead of the whole code.</p>
+</section>
+<section id="discover-the-data" class="level3">
+<h3 class="anchored" data-anchor-id="discover-the-data">Discover the data</h3>
+<p>I prepared a dataset, mainly drawn from INSEE data, and downloaded from the Institut Paris Region, a research organisation on urbanism in the Ile-de-France region. It contains various socio-economic variables at the municipality (and Paris arrondissement) level. It contains information on demographic characteristics, income, and housing market variables.</p>
+<p>The codebook contains all variables and a quick description.</p>
+</section>
+</section>
+<section id="data-cleaning" class="level2">
+<h2 class="anchored" data-anchor-id="data-cleaning">Data cleaning</h2>
+<p>Data cleaning refers to going from a raw dataset to a dataset that can be used and manipulated effortlessly. Below are some examples of data cleaning procedures:</p>
+<ul>
+<li>Format column names (eg, replace spaces with underscores with <code>rename()</code>, or clean the whole set at once with <code>janitor::clean_names()</code>)</li>
+<li>Remove missing values if they are <em>real</em> missing values, with <code>mutate()</code> and <code>ifelse()</code></li>
+<li>Replace weird values by NAs or 0s (eg, most INSEE missing wage values are coded 99999 and should be treated as NAs, not as 99999) with <code>mutate()</code> and <code>ifelse()</code></li>
+<li>Clean or create ID variables (for instance, the municipal ID in France is made of the <em>département</em> code on 2 digits and the municipality on 3 digits, so to build a municipal ID you concatenate both) with <code>mutate()</code> and <code>paste0()</code></li>
+<li>Put variables in the right format (eg, numeric variables such as wages should be… numeric and not string, which is very frequent with <code>.csv</code> datasets that do not store the column format) with <code>mutate()</code> and <code>as.numeric()</code> or <code>as.character()</code></li>
+<li>Overall visual inspection, with <code>str()</code>, <code>summary()</code> and <code>head()</code></li>
+</ul>
+<p>Although time consuming, this step is particularly important to (i) familiarise yourself with the data and (ii) save precious time when it comes to the analysis.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+The 99999 problem, and why it matters more than it looks
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If a wage variable codes missing values as 99999 and you do not catch it, nothing breaks. <code>mean()</code> returns a number. The number is wrong, the table is wrong, the regression is wrong, and every one of them looks completely normal.</p>
+<p>This is the archetype of the silent failure. The defence is not cleverness, it is habit: after every import, run <code>summary()</code> on every numeric column and look at the min and the max. A maximum of 99999 on a wage variable, or a minimum of 0 on a variable that cannot be 0, is visible in one second if you look, and invisible forever if you do not.</p>
+</div>
+</div>
+<p>Usually, data come with a codebook, a dictionary, or some kind of documentation (another dataset or a <code>.pdf</code>). It is very useful to read it carefully to understand how data are reported (missing values, column names, variable formatting).</p>
+<p>For the purpose of the class, the data are already cleaned, but never <strong>take data at face value</strong>!</p>
+</section>
+<section id="data-manipulation" class="level2">
+<h2 class="anchored" data-anchor-id="data-manipulation">Data manipulation</h2>
+<section id="merge-datasets" class="level3">
+<h3 class="anchored" data-anchor-id="merge-datasets">Merge datasets</h3>
+<p>In real world situations, data come from many sources and/or are delivered in many datasets (one per year, or per area, for instance). You then want to <strong>merge</strong> them to obtain a bigger and more insightful dataset.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Because R is an object-based language, you can manipulate several datasets within the same function. However, this is perilous, as you have to make sure they have the same dimensions, are formatted the same way, and are sorted the same way. Merging on an explicit key removes all three risks at once.</p>
+</div>
+</div>
+<p>In <code>dplyr</code>, merging is done through the <code>join</code> functions. A join between <code>df1</code> and <code>df2</code> has to be done on at least one joining variable, called the key. There are several types of join:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 63%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Join Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>inner_join()</code></td>
+<td>Returns rows with matching keys in both tables</td>
+</tr>
+<tr class="even">
+<td><code>left_join()</code></td>
+<td>Returns all rows from the left table, with matches from the right if present</td>
+</tr>
+<tr class="odd">
+<td><code>right_join()</code></td>
+<td>Returns all rows from the right table, with matches from the left if present</td>
+</tr>
+<tr class="even">
+<td><code>full_join()</code></td>
+<td>Returns all rows from both tables, matching where possible</td>
+</tr>
+<tr class="odd">
+<td><code>semi_join()</code></td>
+<td>Returns rows from the left table that have a match in the right table</td>
+</tr>
+<tr class="even">
+<td><code>anti_join()</code></td>
+<td>Returns rows from the left table that do <strong>not</strong> have a match in the right table</td>
+</tr>
+</tbody>
+</table>
+<p>The code looks like this. <strong>Always write <code>by =</code> explicitly</strong>, even when you do not have to:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">=</span> <span class="fu">left_join</span>(df1, df2, <span class="at">by =</span> <span class="st">"codgeo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the key does not have the same name in the two tables, name both sides:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">=</span> <span class="fu">left_join</span>(df1, df2, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"codgeo"</span> <span class="ot">=</span> <span class="st">"code_commune"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Of course, this is compatible with the pipe syntax:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>merged_df <span class="ot">=</span> df1 <span class="sc">%&gt;%</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(df2, <span class="at">by =</span> <span class="st">"codgeo"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Never accept a join you have not checked
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>If you omit <code>by =</code>, <code>dplyr</code> guesses the key from every column name the two tables have in common. It prints a message saying so, which everyone ignores. If both tables happen to contain a column called <code>year</code>, or <code>libelle</code>, you have silently joined on two keys instead of one, and you have quietly lost most of your observations.</p>
+<p>Three lines, every single time you merge:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(df1)                                            <span class="co"># rows you started with</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(merged_df)                                      <span class="co"># rows you ended with</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>df1 <span class="sc">%&gt;%</span> <span class="fu">anti_join</span>(df2, <span class="at">by =</span> <span class="st">"codgeo"</span>) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()     <span class="co"># left rows with no match</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For a <code>left_join</code>, <code>nrow(merged_df)</code> must equal <code>nrow(df1)</code>. If it is <strong>larger</strong>, your key is not unique in <code>df2</code> and rows have been duplicated. If the <code>anti_join</code> count is large, your keys do not have the same format, and 90% of the time the reason is a leading zero: <code>"01004"</code> read as the number <code>1004</code>. Check with <code>class(df1$codgeo)</code>. A municipal ID is text, never a number.</p>
+<p><code>anti_join()</code> is not an exotic verb you will never use. It is the diagnostic tool of this entire course.</p>
+</div>
+</div>
+</section>
+<section id="reshape-datasets" class="level3">
+<h3 class="anchored" data-anchor-id="reshape-datasets">Reshape datasets</h3>
+<p>Data manipulation also involves reshaping datasets. Let’s say a dataset contains the population at the municipal level. The first column is the municipality ID and each other column is the population for a given year, such that: <code>codgeo</code>, <code>pop1999</code>, <code>pop2000</code>, up to <code>pop2023</code>.</p>
+<p>To obtain a panel dataset (multiple IDs observed multiple times), we need to reshape it into <strong>long format</strong> (as opposed to wide). The function is <code>pivot_longer()</code>. It comes from the library <code>tidyr</code>. <strong>You need to install it first, then load it</strong>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>data_long <span class="ot">=</span> data_wide <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">pivot_longer</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"pop"</span>), <span class="co"># Might have used -codgeo</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"year"</span>,         <span class="co"># New col name</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"population"</span>,  <span class="co"># New col name</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_prefix =</span> <span class="st">"pop"</span>       <span class="co"># Remove the prefix </span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.integer</span>(year)) <span class="co"># Not necessary, but usually year is numeric</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The counterpart function is <code>tidyr::pivot_wider()</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>An easy way to remember which is which: <strong>long</strong>er makes the table longer (more rows, fewer columns), <strong>wid</strong>er makes it wider (more columns, fewer rows). After a pivot, check <code>dim()</code> before and after. The number of cells carrying information should not change.</p>
+</div>
+</div>
+</section>
+<section id="other-manipulations" class="level3">
+<h3 class="anchored" data-anchor-id="other-manipulations">Other manipulations</h3>
+<p>In <code>dplyr</code>, it is possible to manipulate data using the following functions:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 63%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>filter()</code></td>
+<td>Selects rows based on logical conditions (eg, keep Ile-de-France)</td>
+</tr>
+<tr class="even">
+<td><code>select()</code></td>
+<td>Chooses columns by name</td>
+</tr>
+<tr class="odd">
+<td><code>arrange()</code></td>
+<td>Reorders rows based on column values</td>
+</tr>
+<tr class="even">
+<td><code>distinct()</code></td>
+<td>Returns unique rows</td>
+</tr>
+<tr class="odd">
+<td><code>slice()</code></td>
+<td>Selects rows by position or helper functions (eg, <code>slice_head()</code>)</td>
+</tr>
+<tr class="even">
+<td><code>bind_rows()</code></td>
+<td>Stack two dataframes by rows</td>
+</tr>
+<tr class="odd">
+<td><code>bind_cols()</code></td>
+<td>Combine two dataframes side by side</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>bind_cols()</code> glues two tables side by side <strong>by position</strong>, with no key and no check. If the two tables are not sorted identically you have just attached each municipality’s rent to a different municipality’s population, and nothing will tell you. Use a join. <code>bind_cols()</code> is for cases where you built both objects one line earlier and you are certain.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Exercise
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li>Open the population dataset <code>/raw_data/idf_pop.csv</code> and check whether it is clean. Run <code>str()</code> and <code>summary()</code> before anything else.</li>
+<li>Create a subset containing only <code>codgeo</code> and the columns that start with <code>population</code></li>
+<li>Make it long, with <code>codgeo</code> as the ID and a <code>year</code> column</li>
+<li>Extract the most recent year (ideally with a function rather than by typing the year)</li>
+<li>From the same population file, create a second subset with <code>codgeo</code> and the seven CSP columns (<code>agri</code>, <code>cadre</code>, <code>profint</code>, <code>employ</code>, <code>ouvri</code>, <code>retraite</code>, <code>autsap</code>)</li>
+<li>Open the housing cost dataset <code>/raw_data/idf_rents.csv</code></li>
+<li>Create a dataset with 3 columns: <code>codgeo</code>, <code>rent_appartement</code> and <code>rent_house</code></li>
+<li>Merge the three datasets on the municipality ID. <strong>Check the merge with the three lines above before you go further.</strong></li>
+<li>Save the merged dataset as <code>.csv</code> in <code>/temp</code></li>
+</ol>
+<p>This dataset will be our main dataset for the rest of the class, so it is worth getting right.</p>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Solution
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Column names may differ slightly in your file, check with <code>names()</code> and adapt.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#-------------------------------------------------------------------------------</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="co"># 1_build_idf_data.R</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Builds the main dataset for the class: population, CSP, rents.</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co">#</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Author: your name</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Date: today</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#-------------------------------------------------------------------------------</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyr)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>path <span class="ot">=</span> <span class="st">"C:/Users/mateomoglia/Dropbox/courses/polytechnique/2027_eco51432ep"</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Open and inspect ----------------------------------------------------------</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>pop <span class="ot">=</span> <span class="fu">read.csv2</span>(<span class="at">file =</span> <span class="fu">paste0</span>(path, <span class="st">"/raw_data/idf_pop.csv"</span>))</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(pop)      <span class="co"># every numeric column must be num or int, and codgeo must be chr</span></span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(pop)  <span class="co"># look at the min and the max of every column</span></span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a><span class="co"># 2-4. Population in the most recent year --------------------------------------</span></span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>pop_last <span class="ot">=</span> pop <span class="sc">%&gt;%</span></span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(codgeo, <span class="fu">starts_with</span>(<span class="st">"population"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"population"</span>),</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"year"</span>,</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"population"</span>,</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_prefix =</span> <span class="st">"population"</span></span>
+<span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.integer</span>(year)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-32"><a href="#cb9-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="fu">max</span>(year, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="co"># a function, not a hardcoded 2021</span></span>
+<span id="cb9-33"><a href="#cb9-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-34"><a href="#cb9-34" aria-hidden="true" tabindex="-1"></a><span class="co"># 5. Population by CSP ---------------------------------------------------------</span></span>
+<span id="cb9-35"><a href="#cb9-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-36"><a href="#cb9-36" aria-hidden="true" tabindex="-1"></a>pop_csp <span class="ot">=</span> pop <span class="sc">%&gt;%</span></span>
+<span id="cb9-37"><a href="#cb9-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(codgeo, agri, cadre, profint, employ, ouvri, retraite, autsap)</span>
+<span id="cb9-38"><a href="#cb9-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-39"><a href="#cb9-39" aria-hidden="true" tabindex="-1"></a><span class="co"># 6-7. Rents -------------------------------------------------------------------</span></span>
+<span id="cb9-40"><a href="#cb9-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-41"><a href="#cb9-41" aria-hidden="true" tabindex="-1"></a>rents <span class="ot">=</span> <span class="fu">read.csv2</span>(<span class="at">file =</span> <span class="fu">paste0</span>(path, <span class="st">"/raw_data/idf_rents.csv"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(codgeo, rent_appartement, rent_house)</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-44"><a href="#cb9-44" aria-hidden="true" tabindex="-1"></a><span class="co"># 8. Merge, and check ----------------------------------------------------------</span></span>
+<span id="cb9-45"><a href="#cb9-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-46"><a href="#cb9-46" aria-hidden="true" tabindex="-1"></a>idf_data <span class="ot">=</span> pop_last <span class="sc">%&gt;%</span></span>
+<span id="cb9-47"><a href="#cb9-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(pop_csp, <span class="at">by =</span> <span class="st">"codgeo"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb9-48"><a href="#cb9-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(rents,   <span class="at">by =</span> <span class="st">"codgeo"</span>)</span>
+<span id="cb9-49"><a href="#cb9-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-50"><a href="#cb9-50" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(pop_last)                                          <span class="co"># expected</span></span>
+<span id="cb9-51"><a href="#cb9-51" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(idf_data)                                          <span class="co"># obtained: must be equal</span></span>
+<span id="cb9-52"><a href="#cb9-52" aria-hidden="true" tabindex="-1"></a>pop_last <span class="sc">%&gt;%</span> <span class="fu">anti_join</span>(rents, <span class="at">by =</span> <span class="st">"codgeo"</span>) <span class="sc">%&gt;%</span> <span class="fu">nrow</span>()  <span class="co"># municipalities with no rent</span></span>
+<span id="cb9-53"><a href="#cb9-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-54"><a href="#cb9-54" aria-hidden="true" tabindex="-1"></a><span class="co"># 9. Save ----------------------------------------------------------------------</span></span>
+<span id="cb9-55"><a href="#cb9-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-56"><a href="#cb9-56" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv2</span>(idf_data,</span>
+<span id="cb9-57"><a href="#cb9-57" aria-hidden="true" tabindex="-1"></a>           <span class="at">file =</span> <span class="fu">paste0</span>(path, <span class="st">"/temp/idf_data.csv"</span>),</span>
+<span id="cb9-58"><a href="#cb9-58" aria-hidden="true" tabindex="-1"></a>           <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb9-59"><a href="#cb9-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-60"><a href="#cb9-60" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the <code>anti_join</code> returns a non-zero count, do not shrug. Look at the municipalities concerned. Some rents are genuinely missing for very small communes, which is fine and expected. But if the count is in the hundreds, your keys have a formatting problem, not a data problem.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Before moving on, you should be able to
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul class="task-list">
+<li><label><input type="checkbox">Say what <code>str()</code> tells you that <code>head()</code> does not</label></li>
+<li><label><input type="checkbox">Explain in one sentence why <code>read.csv()</code> and <code>read.csv2()</code> are not interchangeable</label></li>
+<li><label><input type="checkbox">Write the three lines that check a merge, from memory</label></li>
+<li><label><input type="checkbox">Say how many rows a <code>left_join</code> should return, before running it</label></li>
+<li><label><input type="checkbox">Find your saved <code>idf_data.csv</code> on disk without using the RStudio file pane</label></li>
+</ul>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>© Copyright 2026, Mateo Moglia</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
