@@ -1,0 +1,307 @@
+---
+title: "Descriptive statistics"
+format: html
+editor: visual
+toc: true
+toc-title: ""
+toc-location: right
+---
+
+```{r, echo=F,eval=T,message=F,warning=F}
+packages = c("ggplot2", "readxl", "dplyr", "tidyr", "xtable", "knitr")
+# Install packages not yet installed
+installed_packages = packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+```
+
+## Roadmap
+
+In this part, we are going to learn how to:
+
+-   Compute summary statistics
+-   Export them into a `.tex` file
+-   Run simple linear regressions
+
+So far, please check that you:
+
+-   [ ] Opened RStudio, wrote your preamble, created a `path` object
+-   [ ] Loaded the data `/temp/idf_data.csv` into RStudio
+-   [ ] Ran `str()` on it and every numeric column is `num` or `int`
+-   [ ] Loaded the package `dplyr`
+
+## Descriptive statistics
+
+### Definition
+
+Descriptive statistics summarise and organise data to make them easier to understand, often using measures such as the mean, median, variance, standard deviation, and also the number of observations.
+
+The number of observations is not a formality. A mean computed on 1,281 municipalities and a mean computed on 96 of them are two different objects, and the difference is usually invisible in the table unless you put it there. **Always report N.**
+
+### Implementation
+
+In R, descriptive statistics can be implemented using built-in functions such as `mean()`, `median()`, `sd()` and `summary()`, or through the `dplyr` package for more flexible and readable workflows. The key function is `summarize()` (or `summarise()`, R is relatively flexible between UK and US English).
+
+If you want to summarise by group, make sure to group your data first using `group_by()`.
+
+::: callout-warning
+## `na.rm` is not an option, it is a decision
+
+`mean(x)` on a vector containing a single `NA` returns `NA`. That is R being loud and helpful.
+
+`mean(x, na.rm = TRUE)` returns a number. That is R doing what you asked, which is to compute the average of the municipalities that happen to have data, and to say nothing about the ones that do not.
+
+Neither is right by default. What is wrong is adding `na.rm = TRUE` reflexively because the first version returned `NA` and you wanted a number. Before you add it, run `sum(is.na(x))` and find out how many you are dropping and whether they are dropped at random. An LLM will add `na.rm = TRUE` for you without asking. That is the moment to stop and think, not to move on.
+:::
+
+### Departmental population
+
+The first question we want to answer is fairly simple: what is the population in each *département*?
+
+::: callout-tip
+## Exercise
+
+From the `idf_data` data, create a new data frame with the population at the *département* level.
+
+1.  Create a variable with the *dep* ID (hint: use `substr()` to extract the first two digits of the municipal ID)
+2.  Group by *département* and compute the sum of population
+
+Ile-de-France has 8 *départements*. If your table has 9 rows, or 7, something is wrong with your ID. Check before moving on.
+:::
+
+::: {.callout-note collapse="true"}
+## Solution
+
+```{r, echo = T, eval = F}
+pop_dep = idf_data %>%
+  mutate(dep = substr(codgeo, 1, 2)) %>%
+  group_by(dep) %>%
+  summarise(population = sum(population, na.rm = TRUE), 
+            n_communes = n(),
+            .groups = "drop")
+
+nrow(pop_dep)      # must be 8
+sum(pop_dep$population) # about 12.2 million. If it is 9.7m, you lost Paris somewhere
+```
+
+`substr()` only works on text. If `codgeo` was read as a number, `substr(75056, 1, 2)` still returns `"75"`, which is why the bug survives here and bites you two scripts later on a *département* numbered 01. Convert once and for all: `mutate(codgeo = as.character(codgeo))`.
+:::
+
+### Housing price by city size
+
+Now, we want to test whether city size correlates with price. A visual approach would be interesting, and we will do it in Part 3, but for now we stick with the numeric approach.
+
+How can we proceed?
+
+::: callout-tip
+## Exercise
+
+From the `idf_data` data, create a new data frame, called `cost_size`, which provides the first quartile, the median, the third quartile and the mean of housing cost by group of city size.
+
+Define **exactly five** size groups, using `cut()`, and justify your cutoffs in a comment. There is no correct answer, but there is a difference between a cutoff you chose and a cutoff you inherited from an LLM without looking at the distribution first.
+
+The resulting table should have the columns `city_size`, `type`, `mean`, `q1`, `q2`, `q3`, since that is what the export code below expects.
+:::
+
+::: {.callout-note collapse="true"}
+## Solution
+
+```{r, echo = T, eval = F}
+# Look at the distribution BEFORE choosing the cutoffs
+summary(idf_data$population)
+quantile(idf_data$population, probs = seq(0, 1, 0.2), na.rm = TRUE)
+
+cost_size = idf_data %>%
+  # Cutoffs chosen on round numbers close to the population quintiles
+  mutate(city_size = cut(population,
+                         breaks = c(0, 2000, 5000, 15000, 50000, Inf),
+                         labels = c("1_vsmall", "2_small", "3_medium",
+                                    "4_large", "5_vlarge"))) %>%
+  tidyr::pivot_longer(cols = c(rent_appartement, rent_house),
+                      names_to  = "type",
+                      values_to = "rent") %>%
+  mutate(type = ifelse(type == "rent_appartement", "appartement", "house")) %>%
+  group_by(city_size, type) %>%
+  summarise(mean = mean(rent, na.rm = TRUE),
+            q1   = quantile(rent, 0.25, na.rm = TRUE),
+            q2   = quantile(rent, 0.50, na.rm = TRUE),
+            q3   = quantile(rent, 0.75, na.rm = TRUE),
+            n    = sum(!is.na(rent)),
+            .groups = "drop")
+
+cost_size
+```
+
+Look at the `n` column before you look at anything else. If the "Very Large" group has 11 municipalities, the mean in that row is not a statistic, it is an anecdote, and you should say so in the note under the table.
+:::
+
+## Linear regression
+
+The point of this class is not to teach you much about linear regression. The baseline model is:
+
+$$
+y_i = \alpha + \beta x_i + e_i 
+$$
+
+Two clarifications, because they are exactly the sort of thing that gets written sloppily and then repeated.
+
+First, $\beta$ is the **slope**, not the correlation. The two are related by $\beta = \rho_{xy} \frac{\sigma_y}{\sigma_x}$ and they coincide only when both variables are standardised. Reporting one and calling it the other changes the units of your answer.
+
+Second, on causality. The Gauss-Markov theorem tells you that OLS is the best linear unbiased estimator under a set of assumptions about the error term. It says nothing whatsoever about causality. Reading $\beta$ as an effect rather than an association requires that $x$ be uncorrelated with everything else sitting in $e$. That condition is not testable, and in cross-sectional municipal data like ours it is not remotely plausible. **Assume association unless you can defend otherwise.**
+
+The base function for linear regression is `lm(y ~ x, data)`. However, I highlight a much more powerful and flexible package, both for estimation and for exporting results: `fixest::feols()`, which uses the same syntax and allows many more linear models and extensions.
+
+::: callout-tip
+## Exercise
+
+1.  Compute the correlation between population and housing cost with `cor()`. Mind the missing values.
+2.  Estimate the same relationship with `feols(rent_appartement ~ population, idf_data)`. Compare the number with the one from step 1 and explain why they differ.
+3.  Create two new columns: log population and log housing cost
+4.  Re-estimate with the logged variables. Do the results make sense? What is the interpretation of the coefficient now, in one sentence, with units?
+5.  Which of the two specifications would you put in a paper, and why?
+:::
+
+::: {.callout-note collapse="true"}
+## Solution
+
+```{r, echo = T, eval = F}
+library(fixest)
+
+# 1. Correlation
+cor(idf_data$population, idf_data$rent_appartement, use = "complete.obs")
+
+# 2. Level-level regression
+reg = feols(rent_appartement ~ population, idf_data)
+summary(reg)
+
+# The two numbers differ because cor() is unit-free and bounded in [-1, 1],
+# while the slope is in euros per square metre PER INHABITANT. The slope
+# will look tiny simply because the denominator is in hundreds of thousands.
+
+# 3-4. Logs
+idf_data = idf_data %>%
+  mutate(log_population          = log(population),
+         log_rent_appartement = log(rent_appartement))
+
+reg_log = feols(log_rent_appartement ~ log_population, idf_data)
+summary(reg_log)
+
+# The coefficient is now an elasticity: a 1% larger population is associated
+# with a beta% higher rent per square metre. That is a number you can compare
+# across cities, countries and papers. The level-level coefficient is not.
+```
+
+Note the number of observations in each regression, and compare it with `nrow(idf_data)`. `log()` of zero is `-Inf` and `log()` of a negative number is `NaN`, and either will be dropped from the estimation without a word. If your logged regression has fewer observations than the level one, find out which municipalities disappeared and why.
+:::
+
+## Export to `.tex`
+
+::: callout-important
+If you are not familiar with LaTeX, I warmly recommend you learn it. The learning curve is gentle: a couple of hours is enough for the basics. The online community is superb and LLMs are extremely good at it. A good starting point is Overleaf and their guide to [learn LaTeX in 30 minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes).
+:::
+
+Several libraries exist to export tables in `.tex` format (or plain text, or html). Among the most popular, we use `stargazer`, which is flexible and well suited to descriptive statistics, `knitr` for exporting data frames, and the `etable` function from `fixest`.
+
+::: callout-note
+## Why export instead of copy-pasting
+
+Because a copy-pasted table is a table nobody can regenerate. If a referee asks you to drop Paris, you want to change one line and re-run, not retype 40 numbers and introduce two typos. Every number in your paper should be traceable to a line of code, without exception. This is the single habit that separates a reproducible project from a stressful one.
+:::
+
+1.  Export the population count
+
+```{r, echo = T, eval = F}
+library(stargazer)
+
+# stargazer expects a plain data.frame. Anything coming out of a
+# group_by() %>% summarise() is a tibble, so convert it explicitly.
+stargazer(
+  as.data.frame(pop_dep),
+  summary          = FALSE,
+  rownames         = FALSE,
+  title            = "Population by département (2021)",
+  label            = "tab:pop",
+  covariate.labels = c("Dep.", "Population", "Communes"),
+  notes            = "Source: INSEE, Recensement Permanent (2021).",
+  out              = paste0(path, "/output/pop_dep.tex")
+)
+```
+
+Let's break down the function together. Note that `covariate.labels` must have exactly as many entries as your table has columns. A mismatch here is a loud error, which is the good kind, but it is also the most common reason this chunk fails.
+
+2.  Export the rent data
+
+```{r, echo = T, eval = F}
+library(kableExtra)
+
+# Prettify the labels
+cost_size = cost_size %>%
+  mutate(city_size = recode(city_size,
+                            "1_vsmall" = "Very Small",
+                            "2_small"  = "Small",
+                            "3_medium" = "Medium",
+                            "4_large"  = "Large",
+                            "5_vlarge" = "Very Large")) %>%
+  mutate(type = recode(type,
+                       "appartement" = "Apart.",
+                       "house"       = "House")) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+
+# Order the rows, and keep the ordered object so we can reuse it below
+tab = cost_size %>%
+  mutate(city_size = factor(city_size,
+                            levels = c("Very Small", "Small", "Medium",
+                                       "Large", "Very Large"))) %>%
+  arrange(city_size, type)
+
+# Export with knitr. The number of col.names must match the number of
+# selected columns exactly, here 5.
+export = tab %>%
+  select(type, mean, q1, q2, q3) %>%
+  knitr::kable("latex", booktabs = TRUE,
+               col.names = c("Type", "Mean", "Q1", "Q2", "Q3"),
+               escape = FALSE) %>%
+  # Group headers computed from the data, so this still works if you
+  # change the number of size groups
+  kableExtra::pack_rows(index = table(tab$city_size)) %>%
+  kableExtra::kable_styling(latex_options = c("hold_position"))
+
+writeLines(export, paste0(path, "/output/cost_size.tex"))
+```
+
+Let's break down the function. The line worth dwelling on is `pack_rows(index = table(tab$city_size))`. The obvious way to write this is to hardcode the row numbers of each group, 1 to 2, 3 to 4, and so on. That works exactly once, and silently mislabels every row the day you switch from five size groups to four. Computing the index from the data means the table cannot go out of sync with the data it describes.
+
+3.  Export the regressions
+
+```{r, eval = F, echo = T}
+# reg and reg_log are the objects you created in the exercise above
+
+# A dictionary, so that variable names become readable labels everywhere
+setFixest_dict(c(population              = "Population",
+                 log_population          = "Population (log)",
+                 rent_appartement     = "Rent",
+                 log_rent_appartement = "Rent (log)"))
+
+export = etable(reg, tex = TRUE, style.tex = style.tex("aer"), fitstat = ~ r2 + n)
+writeLines(export, paste0(path, "/output/reg.tex"))
+
+export = etable(reg_log, tex = TRUE, style.tex = style.tex("aer"), fitstat = ~ r2 + n)
+writeLines(export, paste0(path, "/output/reg_log.tex"))
+
+# Better still: both models side by side, which is what a reader wants
+export = etable(reg, reg_log, tex = TRUE, style.tex = style.tex("aer"),
+                fitstat = ~ r2 + n)
+writeLines(export, paste0(path, "/output/reg_both.tex"))
+```
+
+::: callout-note
+## Before moving on, you should be able to
+
+-   [ ] Explain the difference between a correlation and a slope, with units
+-   [ ] Say what Gauss-Markov does and does not give you
+-   [ ] Justify, out loud, one `na.rm = TRUE` you wrote today
+-   [ ] Open your `/output` folder and find three `.tex` files that you can regenerate from scratch
+:::

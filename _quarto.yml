@@ -1,0 +1,34 @@
+project:
+  type: website
+  output-dir: _site
+
+execute:
+  freeze: auto
+
+website:
+  title: "Introduction to R"
+  sidebar:
+    style: "docked"
+    search : false
+    contents:
+      - href: index.qmd
+        text: Home
+      - href: part0_r.qmd
+        text: First hand on R
+      - href: part1_data.qmd
+        text: Open data
+      - href: part2_desc.qmd
+        text: Descriptive statistics
+      - href: part3_viz.qmd
+        text: Data visualisation
+      - href: part5_debug.qmd
+        text: Debugging clinic
+      - href: part4_spatial.qmd
+        text: Spatial data
+  page-footer:
+    right: "Built with [Quarto](https://quarto.org/)"
+    left: "&copy; Copyright 2026, Mateo Moglia"
+
+format:
+  html:
+    theme: united

@@ -1,0 +1,363 @@
+---
+title: "First hands on R"
+format: html
+editor: visual
+toc: true
+toc-title: ""
+toc-location: right
+---
+
+```{r, echo=F,eval=T,message=F,warning=F}
+packages = c("ggplot2", "readxl", "dplyr", "tidyr", "xtable")
+# Install packages not yet installed
+installed_packages = packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+```
+
+## Roadmap
+
+For this first part, we are going to
+
+1.  Download R and Rstudio
+2.  Set up a project the way a project should be set up
+3.  Learn to read an error message, and to work with an LLM without being fooled by it
+4.  Discover the software
+5.  Dig into the `tidyverse` environment
+
+## What is R? Set-up and launch
+
+R is a free and open-source software used in many contexts: data cleaning, data visualisation, econometrics, machine and deep learning, among others. It is supported by a lively and active user community. R is an **object-based** language, meaning that we are going to manipulate objects through a series of commands.
+
+R can be used directly from a command terminal, but we prefer to use RStudio, an IDE, to make our lives easier. An IDE is an interface that eases the use of a software. The most popular one is `RStudio`. To use it, we need to:
+
+1.  Download R
+2.  Then, download RStudio
+
+> You can download both from here <https://posit.co/download/rstudio-desktop/>.
+
+## General best practices
+
+Before jumping to coding *per se*, let me recall some best practices when performing computer-based tasks. Knowing those practices is relevant for several reasons:
+
+-   Save yourself time in the future: it might be bothersome at first, but the future you will thank the current you
+-   Research reproducibility is a high-stake aspect of research
+-   It is probably more pleasant to work in a tidy and clean environment than in a messy one
+
+There is also a reason that is specific to this year. When an LLM writes half of your code, the only thing that still distinguishes a good empirical economist from a bad one is the ability to *check*. Checking is impossible in a folder where you cannot tell which file produced which table.
+
+### Folder organization
+
+Computers are organized around folders. We are going to work in a working directory (`wd`), but we need to identify it. My folder tree looks like this:
+
+``` plaintext
+C:/Users/mateomoglia/Dropbox/
+├── Documents/
+│   ├── perso/
+│   │   ├── banque/
+│   │   ├── admin/
+│   │   └── festival/
+├── Downloads/
+├── Music/
+├── Pictures/
+│   ├── famille/
+│   └── vacances/
+├── courses/
+│   └── polytechnique/
+│       ├── 2024_eco102/
+│       ├── 2025_eco1s002/
+│       ├── 2026_eco51432ep/
+│       └── 2027_eco51432ep/
+└── research/
+```
+
+Here we are going to work in `~/courses/polytechnique/2027_eco51432ep/`. This folder may (and should!) contain subfolders. For this class, we use exactly four, and we will use these names and no others for the whole course:
+
+``` plaintext
+2027_eco51432ep/
+├── code/       # your .R scripts, and nothing else
+├── raw_data/   # data as you received them. Never modify anything in here.
+├── temp/       # intermediate datasets your code produced
+└── output/     # tables and figures that end up in a paper or slides
+```
+
+Each time I start a project, I always create those ones, with the same naming convention in all my projects. I stick to these rules to save time when navigating between projects, and when changing computers.
+
+::: callout-note
+The `raw_data` folder is read-only *by convention*. If you ever open a raw file in Excel, change a cell and save it, your results are no longer reproducible and nobody, including you, will ever know what happened. Every transformation must happen in a script.
+:::
+
+### Naming convention
+
+A typical tip is to choose simple and short titles for the files and the scripts. For instance, this file is named `part0_r.qmd`. Your code can be named `code_tutorial.R`. It should be self-explanatory.
+
+::: callout-tip
+Avoid at all cost using spaces or special characters in your file names. Prefer an underscore instead.
+
+And never, ever, name a file `code_final.R`, then `code_final_v2.R`, then `code_final_v2_FINAL.R`. Either use git, or keep exactly one file and let your folder carry the date. Sequences of "final" files are how people lose a chapter.
+:::
+
+### When writing code
+
+-   **Always** comment your code, make it readable for your future self but also for others. You may use your code in a week, a month, a year, and should be able to understand it directly! Comments in R start with `#`.
+
+-   When creating objects, functions, or whatever, give them simple but understandable names.
+
+-   For instance, if you create a data frame containing wages for individuals aged between 25 and 30, you may call it `wage_25_30` and not `w2530` (too short) or `wage_individuals_aged_25_30` (too long).
+
+-   Moreover, especially for large projects, you want to have different scripts. Always keep scripts short and with clear names. For instance `1_clean_data.R`, `2_import_wages.R`, `3_merge_datasets.R`, and `4_data_analysis.R`.
+
+-   Finish every script with `sessionInfo()`. It prints your R version and every package version you used. In two years, when a result cannot be replicated, that single line is what tells you why.
+
+## First step in R/Rstudio
+
+### Some useful terms
+
+-   So far, we talked about `script`.
+
+-   We are going to manipulate `objects` using `functions`.
+
+-   Objects can be of different `classes`: matrix, vector, character, numeric, data.frame, etc. Some functions are already in `R` but some are not. Hence, we need to load them thanks to `packages`.
+
+### Open a script
+
+-   We are going to create our first script (the extension is `.R`).
+
+-   This script contains all commands you want to run. R has built-in functions but most useful functions should be called using `library()`.
+
+-   These libraries should be first downloaded then loaded into your project.
+
+-   First, open RStudio and open a new script.
+
+-   You should have an empty page. You may want to write some words at the top of it to have an idea of what this code does. You can use `#` to comment code.
+
+### Seek for help and documentation
+
+To know more about a function, simply type `?function` in the console. This is the only source that cannot be wrong: it is written by the person who wrote the function. Internet is your friend too, and Stack Overflow answers are usually attached to a version number and a discussion, which is worth a lot.
+
+And of course, ChatGPT and other LLMs are very good at R. I learned R before they existed, so I still reach for the documentation first. You did not, and you will not. That is fine. What follows is not a warning against using them, it is a method for using them well.
+
+::: callout-warning
+## Using an LLM well
+
+An LLM will almost always return code that runs. Running is not the same as being correct. Before you keep any suggested code:
+
+1.  **Read it line by line and say out loud what each line does.** If you cannot, do not use it. This is the whole rule, the other two are just how you enforce it.
+2.  **Inspect the object after every step**, with `dim()`, `str()`, `summary()`, `head()`. Compare with what you expected *before* you ran it. Form the expectation first, then look. Looking first and then deciding you expected that is not a check.
+3.  **Verify the function exists and takes those arguments**, with `?function`. LLMs invent plausible argument names, and a plausible argument name is the hardest kind of bug to see.
+
+Two failure modes matter for us:
+
+-   A **loud failure** throws an error. It costs you five minutes and it is doing you a favour.
+-   A **silent failure** returns a number that is wrong. It costs you a chapter.
+
+Silent failures live in four places, and we will meet all four in this course: joins, missing values, decimal separators, and coordinate systems.
+
+One last thing. An LLM has no idea what your variables mean. It will happily divide a rent per square metre by a headcount and call it `rent_per_capita`. It is not wrong about R. It is wrong about economics, and only you can catch that.
+:::
+
+### Reading an error message
+
+Half of learning R is learning to read six error messages. They look intimidating because they are terse, not because they are complicated. Read the **last line first**, then find the object name it mentions.
+
+| Message | What it actually means |
+|-----------------------------------|-------------------------------------|
+| `could not find function "x"` | The package is not loaded, or you mistyped the name |
+| `object 'x' not found` | You never created it, or you mistyped it, or you ran your lines out of order |
+| `non-numeric argument to binary operator` | You are doing maths on a column that R thinks is text |
+| `undefined columns selected` | Wrong column name, or wrong bracket |
+| `arguments imply differing number of rows` | A `bind` or a join went wrong |
+| `subscript out of bounds` | You asked for element 10 of something with 6 elements |
+
+Three reflexes worth acquiring today:
+
+1.  **When a pipe fails, run it one line at a time.** Stop before each `%>%`, look at the object, continue. The error is almost never on the line R points to. It is one step earlier.
+2.  **Restart R often** (`Session > Restart R`, or Ctrl/Cmd + Shift + F10). Half of "object not found" errors are objects that exist in your environment but not in your script, because you created them in the console and forgot. If your script does not run from top to bottom in a fresh session, your script does not work.
+3.  **Never clear the environment with `rm(list = ls())` instead of restarting.** It does not unload packages and it does not reset options, so it hides exactly the problems you want to find.
+
+### Script
+
+Here is how a script starts. Note what is *not* there: no `setwd()`.
+
+```{r}
+#| echo: true
+#| eval: false
+#-------------------------------------------------------------------------------
+# This script opens a dataset and proceeds to data visualisation.
+#
+# Author: Matéo Moglia
+# Date: 08/09/2026
+#-------------------------------------------------------------------------------
+
+# Packages ---------------------------------------------------------------------
+library(dplyr)
+
+# Path -------------------------------------------------------------------------
+# One absolute path, declared once, at the top of the script.
+# When you send this script to someone, this is the only line they change.
+path = "C:/Users/mateomoglia/Dropbox/courses/polytechnique/2027_eco51432ep"
+```
+
+Notice that we created our first object, named `path`, using the assignment operator `=`. R also accepts `<-`, which does exactly the same thing. I use `=` throughout this class. Pick one and never mix them, the point is that your code should look like it was written by one person.
+
+::: callout-important
+## Why no `setwd()`
+
+You will see `setwd("C:/Users/...")` in a lot of code, including a lot of code an LLM will hand you. Avoid it. It hardcodes your machine into every line that follows, so the script breaks the moment anyone else, including future-you on a new laptop, tries to run it. Worse, it fails *silently* when a folder of the same name happens to exist.
+
+A single `path` object at the top solves 90% of the problem for 0% of the effort. If you want the proper solution: create an RStudio Project (`File > New Project`), which produces a `.Rproj` file, then use `here::here("raw_data", "idf_data.csv")`. All paths become relative to the project folder and nothing is hardcoded at all.
+:::
+
+::: callout-tip
+What is the class of `path`? **Hint: use the function `class()`**
+:::
+
+### Our first data manipulation
+
+We can load a very famous built-in data set, the `iris` dataset, into an object called `data`.
+
+```{r}
+#| echo: true
+data = iris # Attribute to data the data set iris
+class(data) # Check its class
+head(data) # Preview the first lines of data
+```
+
+Notice that the two objects we created so far can be seen in the Environment pane.
+
+### Data description
+
+By clicking on the object in the `Environment` panel, you can visualise it, but you can also write some code to describe it. As we just checked, `data` is a `data.frame` object. It is made of several columns and rows.
+
+To call a specific column in a dataframe, we use the `$` operator. To know all the column names in `data`, we can use the function `names()`. To know the "size" of the dataframe, the right function is `dim()`: the first element is the number of rows and the second the number of columns.
+
+::: callout-tip
+You can also call a column by its position in the dataframe. The bracket reads `data[rows, columns]`, in that order, always. So the second **column** is `data[, 2]` and the second **row** is `data[2, ]`. The blank space means "all of them".
+
+What should you write to print the 10th element of the 3rd column?
+:::
+
+To describe the data, we can use several built-in functions.
+
+```{r}
+#| echo: true
+table(data$Species) # To make a frequency table
+summary(data$Sepal.Length) # To provide summary statistics
+str(data) # The single most useful function in R: what is in there, and of what class
+```
+
+`str()` deserves a line of its own. It is the function you run after every single import, for the rest of your career. It tells you the class of every column, and a column that should be numeric and shows `chr` is a bug you have five seconds to catch and three weeks to regret.
+
+Now, we want to visualise the data. To do so, we can use the base R function `plot()`. It takes at least one argument, on the `x` axis. Here, with two arguments, it plots a simple scatter plot.
+
+```{r}
+#| echo: true
+plot(iris$Sepal.Length, iris$Sepal.Width)
+```
+
+## The `tidyverse`
+
+### Why and how use it?
+
+There are several ways to code in R. The first one, as we just saw, is called "base R". Although useful to perform very simple tasks, it becomes cumbersome for more difficult ones. The most popular approach in the R community is by far the tidyverse approach. The idea is simple: we are going to apply a series of functions on an object to modify it or create a new object.
+
+Its popularity comes from two things. The code reads as an ordered sequence of steps, which makes it far easier to check and to hand over, and the verbs are consistent across packages, so what you learn on one transfers to the next.
+
+::: callout-note
+You will sometimes read that the tidyverse is faster than base R. It is not, and on small data it is often slightly slower. It is faster to *write*, and much faster to *debug*, which is what actually costs you time. A third approach, `data.table`, is genuinely the fastest at execution, but has a steeper entry cost. Use it when a dataset stops fitting comfortably in memory, not before.
+:::
+
+To use it, we can download the package `dplyr` and load it into our session. You need to download the package once (as long as you keep the same computer) but to load it each time you open RStudio. This is true for *all* packages. Note that all the functions from the `base` package are natively loaded into R.
+
+```{r, eval = F}
+install.packages("dplyr") # Notice the quotation marks
+library(dplyr) # Notice the absence of quotation marks
+```
+
+::: callout-tip
+Most of the time, a function exists only in one package. However, it happens that two packages load functions with the same name. To make sure you use the function from the desired package, you can use the `package::function()` syntax. In my research, I usually have to deal with that with the function `select()`, which is loaded in `dplyr` and in `sf` (a package for spatial data manipulation). Hence, if both packages are loaded and I want the one from `dplyr`, I have to write `dplyr::select()`.
+
+Watch your console when you load a package. The message `The following object is masked from 'package:stats': filter` is R telling you, politely and once, that a name now means something different. Ignore it and you will spend an afternoon on it later.
+:::
+
+### General philosophy
+
+Each function is going to be separated by a pipe operator `%>%`. The idea is as follows. We apply to the object `data` several functions in order to create a new data object, `new_data`. These functions, for instance, create a new column, slice the data, drop the duplicates, remove the missing values, group the data by group, change the type of a column (from numeric to character), compute summary statistics, etc.
+
+```{r, eval = F}
+new_data = data %>%
+    function1(col) %>%
+    function2(col) %>%
+    function3(col)
+```
+
+Below, I list the most common `dplyr` functions.
+
+| Function      | Description                              |
+|---------------|------------------------------------------|
+| `filter()`    | Select rows that meet certain conditions |
+| `select()`    | Pick specific columns from a data frame  |
+| `arrange()`   | Reorder rows by column values            |
+| `mutate()`    | Create or modify columns                 |
+| `summarise()` | Collapse data into summary statistics    |
+| `group_by()`  | Define groups for grouped operations     |
+| `join()`      | Combine datasets by matching keys        |
+| `distinct()`  | Keep only unique rows                    |
+| `rename()`    | Change column names                      |
+| `slice()`     | Select rows by position                  |
+
+::: callout-tip
+## Exercise
+
+Using the `data` dataframe, create a sub-dataset `new_data` such that:
+
+-   It contains only the species *setosa*
+
+-   The column `Sepal.Length` is now named `sepal_length`
+
+-   It contains a new column `large_width` which takes 1 if the sepal width is bigger than 3 (hint: use `ifelse(test, yes, no)`)
+
+Before you run it: how many rows do you expect `new_data` to have? Write the number down, then check with `nrow()`.
+:::
+
+::: {.callout-note collapse="true"}
+## Solution
+
+```{r, echo = T, eval = T}
+new_data = iris %>%
+    filter(Species == "setosa") %>%
+    rename("sepal_length" = "Sepal.Length") %>%
+    mutate(large_width = ifelse(Sepal.Width >= 3, 1, 0))
+
+nrow(new_data) # 50, since iris has 50 flowers per species
+```
+
+Two things worth noticing. The exercise says "bigger than 3" and the code writes `>= 3`, which is not the same thing. Check which one you used, and check how many observations it moves. Second, `filter(Species == "setosa")` uses a double equals sign: one `=` assigns, two `==` compare. This is the single most common typo in R.
+:::
+
+Now, we want to simply print the number of observations for each value of `large_width`. To do so:
+
+```{r, eval = T}
+new_data %>%
+    group_by(large_width) %>% 
+    summarize(count = n(), .groups = "drop")
+```
+
+::: callout-tip
+You can try with other summarising functions. For instance: `summarize(mean = mean(Sepal.Width))`.
+
+Note the `.groups = "drop"`. Without it, the object stays grouped after the `summarize()`, and every operation you run three steps later silently applies group by group. It is a classic, and it produces results that look plausible.
+:::
+
+::: callout-note
+## Before moving on, you should be able to
+
+-   [ ] Say what each of your four project subfolders is for, without looking
+-   [ ] Explain why `setwd()` is a bad idea in one sentence
+-   [ ] Restart R and run your script from top to bottom with no error
+-   [ ] Read `object 'x' not found` and know the three things it can mean
+-   [ ] State one thing you would check before trusting code an LLM gave you
+:::

@@ -1,0 +1,280 @@
+---
+title: "Spatial data"
+format: html
+editor: visual
+toc: true
+toc-title: ""
+toc-location: right
+---
+
+```{r, echo=F,eval=T,message=F,warning=F}
+packages = c("ggplot2", "readxl", "dplyr", "tidyr", "xtable", "sf")
+# Install packages not yet installed
+installed_packages = packages %in% rownames(installed.packages())
+if (any(installed_packages == FALSE)) {
+  install.packages(packages[!installed_packages])
+}
+# Packages loading
+invisible(lapply(packages, library, character.only = TRUE))
+path = "C:/Users/mateomoglia/Dropbox/courses/polytechnique/2027_eco51432ep"
+idf_data = read.csv2(paste0(path,"/temp/idf_data.csv")) %>%
+        mutate(log_rent_appartement = log(rent_appartement),
+               log_rent_house       = log(rent_house),
+               log_population = log(population))
+```
+
+## Roadmap
+
+This part is bonus material. We are going to learn how to:
+
+-   Use georeferenced data
+-   Compute distances, and check that they mean anything
+-   Make maps
+
+## A primer on spatial data
+
+We take advantage of the `/temp/idf_data.csv` we built earlier, `monu_histo.csv` containing the list of all listed monuments in Ile-de-France with their coordinates, and `gares.shp` listing all stations in the Île-de-France train network with their location.
+
+### Shapefiles
+
+Spatial data come in different formats but the most popular is the shapefile `.shp`. As the name suggests, it is a file containing **shapes**. The most common shapes are `POINTS`, `LINES` and `POLYGONS`. As with the `.csv` format, each line contains one shape and can carry other information. Spatial data are usually [spatially projected](https://en.wikipedia.org/wiki/Well-known_text_representation_of_coordinate_reference_systems).
+
+Two things are worth separating clearly, because confusing them is the source of nearly every spatial bug:
+
+-   **WGS84** (EPSG:4326) is a *geographic* coordinate system. Coordinates are longitude and latitude, in **degrees**. This is what a GPS gives you.
+-   **Lambert 93** (EPSG:2154) is a *projected* coordinate system, the official one for metropolitan France. Coordinates are in **metres**, so a subtraction between two points is a distance you can use.
+
+A projection also carries information on the units, the position with respect to the meridians, and so on.
+
+Shapefiles are delivered as folders containing at least 3 files: `.dbf` (the data), `.shx` (indexing the geometry to the data), `.shp` (the shapes). Usually there is also a `.prj` (the projection). You need all files in the same folder to load the `.shp` in any software, be it QGIS, Stata, R or ArcGIS.
+
+### Spatial data in R
+
+Spatial data can be opened in R with the `sf` package. To open a shapefile, the function is `sf::read_sf()`. It creates a specific object type, an `sf` object. All objects of that type contain a `geometry` column by default. To turn an `sf` object back into a `data.frame`, the good practice is `df = df_sf %>% st_drop_geometry() %>% as.data.frame()`.
+
+Most functions (plots, `summarize`, joins) are compatible with `sf` objects. Because of their spatial nature, many additional functions apply too.
+
+::: callout-important
+## The fourth silent failure
+
+A coordinate reference system is metadata. `st_crs(x) = 4326` **declares** what the numbers already are. `st_transform(x, 4326)` **converts** the numbers into that system. They are completely different operations and R will let you do either without complaint.
+
+Declare the wrong system and nothing breaks. Every function still runs, every map still draws, and every distance you compute afterwards is wrong by a factor of about a hundred thousand. There is no error message, ever. The only defence is to check against something you already know.
+
+So: **never compute a distance you have not sanity-checked.** The Eiffel Tower to Notre-Dame is about 4 km. If your code says 0.04, or 400, or 6,000, your projection is wrong, not your data.
+:::
+
+## Price gradient
+
+The objective is to descriptively assess a relationship, although a non-causal one, between rents and the distance to the Eiffel Tower. Step by step:
+
+1.  Open the shapefile of municipalities, and find out what projection it is in
+
+```{r, echo = T, eval = T}
+co_shp = read_sf(paste0(path, "/raw_data/communes.shp")) %>%
+        select(insee, nomcom) %>%   # geometry is sticky in sf, no need to list it
+        rename(codgeo = insee)      # prepare the match for later use
+
+st_crs(co_shp)$input  # which coordinate system?
+st_crs(co_shp)$units  # "m" means projected, NULL or "degree" means geographic
+```
+
+::: callout-tip
+Notice that `select(insee, nomcom)` keeps the geometry anyway. In `sf`, the geometry column is sticky: it follows the object unless you explicitly call `st_drop_geometry()`. This is a feature, and it is also the reason `dplyr::select()` and `sf` occasionally disagree. If `select()` starts behaving oddly, write `dplyr::select()` explicitly, as we saw in Part 0.
+:::
+
+2.  Open the monument data and turn it into a shapefile
+
+Before building any geometry, look at the numbers:
+
+```{r, echo = T, eval = T}
+monu = read.csv2(paste0(path, "/raw_data/monu_histo.csv"))
+
+summary(monu$x_wgs84)
+summary(monu$y_wgs84)
+```
+
+Values between roughly 1 and 3, and between 48 and 49, are **degrees**: longitude and latitude, in WGS84. Values in the hundreds of thousands and the millions are **metres**: Lambert 93. Which one you are looking at determines the next line entirely, and no function will tell you.
+
+```{r, echo = T, eval = T}
+eiffel = monu %>%
+        filter(eiffel == 1) %>%
+        st_as_sf(coords = c("y_wgs84", "x_wgs84"), crs = st_crs(co_shp))
+```
+
+::: callout-warning
+## Check this before you trust anything below
+
+The chunk above does two things you should never do on autopilot. It passes `y_wgs84` as the first coordinate, and `st_as_sf()` always wants **longitude first, latitude second**. And it *declares* the municipalities' CRS rather than converting into it.
+
+Both can be right, and both can be silently catastrophic. It depends on what is actually in the file. So we check, and the check takes one line: the Eiffel Tower must fall inside the 7th arrondissement of Paris.
+
+```{r, echo = T, eval = T}
+st_join(eiffel, co_shp, join = st_within) %>%
+  st_drop_geometry() %>%
+  select(nomcom)
+```
+
+If that returns a Paris arrondissement, the coordinates are fine as written. If it returns `NA`, something is wrong, and there are exactly two candidates. Swap the coordinate order, or replace the CRS declaration by a declaration plus a conversion:
+
+```{r, echo = T, eval = F}
+eiffel = monu %>%
+  filter(eiffel == 1) %>%
+  st_as_sf(coords = c("x_wgs84", "y_wgs84"), crs = 4326) %>%  # what it IS
+  st_transform(st_crs(co_shp))                                # convert to what we need
+```
+
+Try one, re-run the check, try the other. Two minutes here save a chapter later. This is the entire method of this course applied to one line of code: form an expectation, test it against something you know independently, and only then continue.
+:::
+
+3.  Compute the distance between each city centroid and the Eiffel Tower
+
+```{r, echo = T, eval = T}
+co_eiffel = co_shp %>%
+        mutate(centroid = st_centroid(geometry)) %>%
+        mutate(distance = as.numeric(st_distance(centroid, eiffel$geometry[1])) / 1000) %>%
+        select(-centroid) 
+
+summary(co_eiffel$distance)
+```
+
+Read that `summary()` before going further. The minimum should be near zero, for the arrondissements next to the tower. The maximum should be somewhere around 60 to 70 km, which is roughly the radius of Ile-de-France. Any other order of magnitude and the projection is wrong.
+
+::: callout-note
+`st_centroid()` on geographic coordinates prints a warning telling you the centroid is not exact, because a centroid on a sphere is not the same object as a centroid on a plane. On Lambert 93 there is no warning and no issue. This is one more reason to project everything into metres at the top of your script and never think about it again.
+:::
+
+4.  Plot the price gradient
+
+```{r, eval = T, echo = T, message = F, warning = F}
+co_eiffel %>%
+        st_drop_geometry() %>%
+        select(codgeo, distance) %>%
+        left_join(idf_data %>% select(codgeo, rent_appartement, rent_house), 
+                  by = "codgeo") %>%
+        ggplot(aes(x = distance, y = rent_appartement)) +
+        geom_point(aes(colour = "Obs.")) +
+        geom_smooth(formula = y ~ poly(x, 2), method = "lm", aes(colour = "Polynomial")) +
+        geom_smooth(formula = y ~ x, method = "lm", aes(colour = "Linear")) +
+        labs(x = "Distance to the Eiffel Tower (km)", y = "Rent per sqm", colour = NULL) +
+        scale_color_manual(values = c("Linear" = "#D55E00", "Polynomial" = "#0072B2", 
+                                      "Obs." = "black"),
+                           breaks = c("Obs.", "Linear", "Polynomial")) +
+        theme_classic() +
+        theme(legend.position  = "bottom",
+              panel.grid.major = element_line(colour = "darkgray", linetype = "dashed"),
+              panel.grid.minor = element_blank())
+```
+
+Note the `by = "codgeo"` in the join, and the explicit `method` in both smoothers. Neither is required, and both are the difference between a figure you can defend and a figure that changes when your sample does.
+
+::: callout-tip
+## Exercise (if time allows)
+
+Do it yourself, from the raw files, without looking at the code above. Then answer one question: the gradient is steeper close to Paris than far from it. Is that a fact about the housing market, or a fact about the fact that we measured distance to a tourist monument rather than to the nearest employment centre?
+:::
+
+## Maps
+
+### Train stations in Ile-de-France
+
+The point is to map the distance to the nearest RER station for each municipality in Ile-de-France.
+
+```{r, echo = T, eval = F}
+stations = read_sf(paste0(path, "/raw_data/gares.shp")) %>%
+  select(mode, exploitant)
+
+# Always plot a spatial object before doing anything to it.
+# A map is the fastest possible check that your geometry is where you think it is.
+ggplot() +
+  geom_sf(data = co_shp) +
+  geom_sf(data = stations, size = 0.4) +
+  theme_void()
+
+# Remove the stations outside Ile-de-France
+idf_stations = stations %>%
+  st_join(co_shp, join = st_within, left = FALSE)
+
+nrow(stations)      # before
+nrow(idf_stations)  # after: how many did we drop, and does that number make sense?
+
+ggplot() +
+  geom_sf(data = co_shp) +
+  geom_sf(data = idf_stations, size = 0.4) +
+  theme_void()
+
+# Keep only the ones served by an RER
+idf_stations_rer = idf_stations %>%
+  filter(grepl("RER", mode))
+
+# Distance from each centroid to the NEAREST RER station
+centroids = st_centroid(co_shp)
+nearest   = st_nearest_feature(centroids, idf_stations_rer)
+
+co_dist = co_shp %>%
+  mutate(distance = as.numeric(
+    st_distance(centroids, idf_stations_rer[nearest, ], by_element = TRUE)
+  ) / 1000)
+
+summary(co_dist$distance) # sanity check before mapping
+
+ggplot(co_dist) +
+  geom_sf(aes(fill = distance), colour = NA) +
+  scale_fill_viridis_c(option = "B", name = NULL) +
+  theme_void() +
+  labs(title = "Distance (km) to the nearest RER station") +
+  theme(plot.title = element_text(colour = "black", face = "bold", hjust = 0.5, size = 14))
+```
+
+::: callout-note
+## Why `st_nearest_feature()` rather than a matrix
+
+The intuitive way to find the nearest station is to compute every distance and take the minimum: `st_distance(centroids, stations) %>% apply(1, min)`. It works, and on 1,300 municipalities and 250 stations it is instant.
+
+But it builds a matrix with one cell per pair. Here that is 325,000 cells, which is fine. On 35,000 French municipalities and 3,000 stations it is 105 million, and your session dies. `st_nearest_feature()` uses a spatial index and never builds the matrix.
+
+The habit worth taking is not "always use the fast function". It is: **before writing a pairwise operation, multiply the two dimensions and look at the number.** That is a two-second calculation that tells you whether your approach scales, and it is a calculation an LLM will never do for you because it has never seen your data.
+:::
+
+::: callout-tip
+## Exercise
+
+Following the work on train stations, make two maps: one with the total number of stops per municipality, excluding Paris but still drawing it, and one with the total number of RER stops per municipality.
+
+1.  Open the stations and municipal shapefiles
+2.  Keep only stations within Ile-de-France, and outside Paris
+3.  Summarise by municipality the count of stations, total and RER only
+4.  Make the maps using `geom_sf()`
+5.  Add a label to tag the municipality with the most stations
+
+Careful on step 3: municipalities with zero stations must appear with a zero, not disappear. A `left_join` from the municipalities onto the counts does this, an `inner_join` does not, and the map will look perfectly convincing either way.
+:::
+
+### Merging geometries
+
+One last element I believe is important is the spatial manipulation of geometries. `sf` is an extremely powerful package for this. If you use spatial data, you may want to crop geometries to keep an intersection, and `st_intersection()` is your friend. Here we use `st_union()` to merge geometries together.
+
+Because we have municipalities, we may want to plot at the *département* level instead. Hence we use `summarize(geometry = sf::st_union(geometry))` to merge geometries by group:
+
+```{r, echo = T, eval = F}
+dep_shp = co_shp %>%
+        group_by(dep = substr(codgeo, 1, 2)) %>%
+        summarize(geometry = st_union(geometry))
+
+nrow(dep_shp) # must be 8
+```
+
+::: callout-tip
+## Exercise
+
+Plot the number of listed monuments per *département*.
+:::
+
+::: callout-note
+## Before moving on, you should be able to
+
+-   [ ] Explain the difference between declaring a CRS and transforming into one
+-   [ ] State the sanity check you would run on any distance you compute
+-   [ ] Say why plotting a spatial object early is a debugging step and not decoration
+-   [ ] Multiply two dimensions in your head before writing a pairwise operation
+:::
