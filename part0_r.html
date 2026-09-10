@@ -243,7 +243,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="what-is-r-set-up-and-launch" class="level2">
 <h2 class="anchored" data-anchor-id="what-is-r-set-up-and-launch">What is R? Set-up and launch</h2>
 <p>R is a free and open-source software used in many contexts: data cleaning, data visualisation, econometrics, machine and deep learning, among others. It is supported by a lively and active user community. R is an <strong>object-based</strong> language, meaning that we are going to manipulate objects through a series of commands.</p>
-<p>R can be used directly from a command terminal, but we prefer to use RStudio, an IDE, to make our lives easier. An IDE is an interface that eases the use of a software. The most popular one is <code>RStudio</code>. To use it, we need to:</p>
+<p>R can be used directly from a command terminal, but we prefer to use RStudio, an IDE, to make our lives easier. An IDE is an interface that eases the use of a software (VSCode is one of the most popular and is suitable for virtually every language). The most popular one for R is <code>RStudio</code>. To use it, we need to:</p>
 <ol type="1">
 <li>Download R</li>
 <li>Then, download RStudio</li>
@@ -260,7 +260,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Research reproducibility is a high-stake aspect of research</li>
 <li>It is probably more pleasant to work in a tidy and clean environment than in a messy one</li>
 </ul>
-<p>There is also a reason that is specific to this year. When an LLM writes half of your code, the only thing that still distinguishes a good empirical economist from a bad one is the ability to <em>check</em>. Checking is impossible in a folder where you cannot tell which file produced which table.</p>
+<p>When an LLM writes half of your code, the only thing that still distinguishes a good empirical economist from a bad one is the ability to <em>check</em>. Checking is impossible in a folder where you cannot tell which file produced which table.</p>
 <section id="folder-organization" class="level3">
 <h3 class="anchored" data-anchor-id="folder-organization">Folder organization</h3>
 <p>Computers are organized around folders. We are going to work in a working directory (<code>wd</code>), but we need to identify it. My folder tree looks like this:</p>
@@ -317,7 +317,7 @@ Tip
 </div>
 <div class="callout-body-container callout-body">
 <p>Avoid at all cost using spaces or special characters in your file names. Prefer an underscore instead.</p>
-<p>And never, ever, name a file <code>code_final.R</code>, then <code>code_final_v2.R</code>, then <code>code_final_v2_FINAL.R</code>. Either use git, or keep exactly one file and let your folder carry the date. Sequences of “final” files are how people lose a chapter.</p>
+<p>And never, ever, name a file <code>code_final.R</code>, then <code>code_final_v2.R</code>, then <code>code_final_v2_FINAL.R</code>. Either use <code>git</code> or any versioning system, or keep exactly one file and let your folder carry the date</p>
 </div>
 </div>
 </section>
@@ -328,7 +328,7 @@ Tip
 <li><p>When creating objects, functions, or whatever, give them simple but understandable names.</p></li>
 <li><p>For instance, if you create a data frame containing wages for individuals aged between 25 and 30, you may call it <code>wage_25_30</code> and not <code>w2530</code> (too short) or <code>wage_individuals_aged_25_30</code> (too long).</p></li>
 <li><p>Moreover, especially for large projects, you want to have different scripts. Always keep scripts short and with clear names. For instance <code>1_clean_data.R</code>, <code>2_import_wages.R</code>, <code>3_merge_datasets.R</code>, and <code>4_data_analysis.R</code>.</p></li>
-<li><p>Finish every script with <code>sessionInfo()</code>. It prints your R version and every package version you used. In two years, when a result cannot be replicated, that single line is what tells you why.</p></li>
+<li><p>For more advanced users, finish every script with <code>sessionInfo()</code>, or keep precisely track of every packages (and their versions you used). It prints your R version and every package version you used.</p></li>
 </ul>
 </section>
 </section>
@@ -355,7 +355,7 @@ Tip
 <section id="seek-for-help-and-documentation" class="level3">
 <h3 class="anchored" data-anchor-id="seek-for-help-and-documentation">Seek for help and documentation</h3>
 <p>To know more about a function, simply type <code>?function</code> in the console. This is the only source that cannot be wrong: it is written by the person who wrote the function. Internet is your friend too, and Stack Overflow answers are usually attached to a version number and a discussion, which is worth a lot.</p>
-<p>And of course, ChatGPT and other LLMs are very good at R. I learned R before they existed, so I still reach for the documentation first. You did not, and you will not. That is fine. What follows is not a warning against using them, it is a method for using them well.</p>
+<p>And of course, ChatGPT and other LLMs are very good at R. I learned R before they existed, so I still reach for the documentation first. You did not and probably will not. That is fine, but some warnings apply!</p>
 <div class="callout callout-style-default callout-warning callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -369,7 +369,7 @@ Using an LLM well
 <p>An LLM will almost always return code that runs. Running is not the same as being correct. Before you keep any suggested code:</p>
 <ol type="1">
 <li><strong>Read it line by line and say out loud what each line does.</strong> If you cannot, do not use it. This is the whole rule, the other two are just how you enforce it.</li>
-<li><strong>Inspect the object after every step</strong>, with <code>dim()</code>, <code>str()</code>, <code>summary()</code>, <code>head()</code>. Compare with what you expected <em>before</em> you ran it. Form the expectation first, then look. Looking first and then deciding you expected that is not a check.</li>
+<li><strong>Inspect the object after every chunk</strong>, with <code>dim()</code>, <code>str()</code>, <code>summary()</code>, <code>head()</code>. Compare with what you expected <em>before</em> you ran it. Form the expectation first, then look. Looking first and then deciding you expected that is not a check.</li>
 <li><strong>Verify the function exists and takes those arguments</strong>, with <code>?function</code>. LLMs invent plausible argument names, and a plausible argument name is the hardest kind of bug to see.</li>
 </ol>
 <p>Two failure modes matter for us:</p>
@@ -377,14 +377,14 @@ Using an LLM well
 <li>A <strong>loud failure</strong> throws an error. It costs you five minutes and it is doing you a favour.</li>
 <li>A <strong>silent failure</strong> returns a number that is wrong. It costs you a chapter.</li>
 </ul>
-<p>Silent failures live in four places, and we will meet all four in this course: joins, missing values, decimal separators, and coordinate systems.</p>
-<p>One last thing. An LLM has no idea what your variables mean. It will happily divide a rent per square metre by a headcount and call it <code>rent_per_capita</code>. It is not wrong about R. It is wrong about economics, and only you can catch that.</p>
+<p>Silent failures can live in many place. We will meet four very common ones in this course: joins, missing values, decimal separators, and coordinate systems.</p>
+<p>One last thing. An LLM has <strong>no idea</strong> what your variables mean. It will happily divide a rent per square metre by a headcount and call it <code>rent_per_capita</code>. It is not wrong about R. It is wrong about economics, and only you can catch that.</p>
 </div>
 </div>
 </section>
 <section id="reading-an-error-message" class="level3">
 <h3 class="anchored" data-anchor-id="reading-an-error-message">Reading an error message</h3>
-<p>Half of learning R is learning to read six error messages. They look intimidating because they are terse, not because they are complicated. Read the <strong>last line first</strong>, then find the object name it mentions.</p>
+<p>Learning R, or any language, is also learning to read error messages. They look intimidating because they are terse, not because they are complicated. Read the <strong>last line first</strong>, then find the object name it mentions.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 48%">
@@ -696,7 +696,7 @@ Solution
 <pre><code>[1] 50</code></pre>
 </div>
 </div>
-<p>Two things worth noticing. The exercise says “bigger than 3” and the code writes <code>&gt;= 3</code>, which is not the same thing. Check which one you used, and check how many observations it moves. Second, <code>filter(Species == "setosa")</code> uses a double equals sign: one <code>=</code> assigns, two <code>==</code> compare. This is the single most common typo in R.</p>
+<p>Two things worth noticing. The exercise says “bigger than 3” and the code writes <code>&gt;= 3</code>, which is not the same thing. Check which one you used, and check how many observations it moves. Second, <code>filter(Species == "setosa")</code> uses a double equals sign: one <code>=</code> assigns, two <code>==</code> compare.</p>
 </div>
 </div>
 </div>
@@ -842,7 +842,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/mateomoglia\.github\.io\/2027_eco51432ep\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

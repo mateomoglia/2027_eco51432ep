@@ -295,7 +295,7 @@ Note
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Speed is not the only criterion, and usually not the main one. A <code>.csv</code> can be opened by anything, forever, including by a co-author who does not use R. A <code>.RData</code> file cannot. For anything you intend to share or archive, prefer <code>.csv</code>. For a 20 GB intermediate file that only your own code will ever read, use <code>.parquet</code>.</p>
+<p>Speed is not the only criterion, and usually not the main one. A <code>.csv</code> can be opened by anything, forever, including by a co-author who does not use R. A <code>.RData</code> file cannot. For anything you intend to share or archive, prefer <code>.csv</code>. There is a trend to move towards <code>.parquet</code> for larger files.</p>
 </div>
 </div>
 </section>
@@ -319,7 +319,7 @@ The first silent failure of this course
 <div class="callout-body-container callout-body">
 <p><code>read.csv()</code> expects a <strong>point</strong> as the decimal separator and a <strong>comma</strong> as the field separator. <code>read.csv2()</code> expects a <strong>comma</strong> as the decimal separator and a <strong>semicolon</strong> as the field separator. French data, and INSEE data in particular, are usually the second kind.</p>
 <p>Use the wrong one and R does not complain. It just reads your numeric column as text. Then <code>log(rent)</code> throws <code>non-numeric argument to binary operator</code> three scripts later, and you have no idea why.</p>
-<p><strong>So: run <code>str(data)</code> immediately after every import.</strong> Every column that should be a number must show <code>num</code> or <code>int</code>. If it shows <code>chr</code>, you used the wrong reader. This takes two seconds and it will save you an afternoon at least once this year.</p>
+<p><strong>So: run <code>str(data)</code> immediately after every import.</strong> Every column that should be a number must show <code>num</code> or <code>int</code>. If it shows <code>chr</code>, you used the wrong reader.</p>
 </div>
 </div>
 </section>
@@ -327,7 +327,7 @@ The first silent failure of this course
 <h3 class="anchored" data-anchor-id="write-data">Write data</h3>
 <p>Once you are done cleaning the data, you might want to save your dataset (this is actually good practice!). Most functions to read data have a writing counterpart. Hence:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv2</span>(data, <span class="at">file =</span> <span class="st">"C:/your/path/name_of_the_dataset.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv2</span>(data, <span class="at">file =</span> <span class="st">"C:/your/path/temp/name_of_the_dataset.csv"</span>, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Note <code>row.names = FALSE</code>. Without it, R writes an extra unnamed column containing 1, 2, 3, … and when you read the file back you get a mysterious column called <code>X</code>. Every R user has met it. Now you know where it comes from.</p>
 </section>
@@ -774,7 +774,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/mateomoglia\.github\.io\/2027_eco51432ep\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

@@ -213,12 +213,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="roadmap" class="level2">
 <h2 class="anchored" data-anchor-id="roadmap">Roadmap</h2>
-<p>This is the part of the course that justifies the rest of it. We are going to:</p>
+<p>We are going to:</p>
 <ul>
 <li>Find four mistakes in a script that runs perfectly</li>
 <li>Check that your own project is reproducible, by having someone else run it</li>
 </ul>
-<p>You have spent two sessions learning verbs you could have got from a chatbot in four seconds. What follows is the part a chatbot cannot do for you, because it requires knowing what your variables mean.</p>
 </section>
 <section id="why-this-exists" class="level2">
 <h2 class="anchored" data-anchor-id="why-this-exists">Why this exists</h2>
@@ -381,7 +380,7 @@ By the end of this course, you should be able to
 </section>
 <section id="a-closing-note" class="level2">
 <h2 class="anchored" data-anchor-id="a-closing-note">A closing note</h2>
-<p>None of this is about distrusting the tools. Use them. They are better at R syntax than I am and they are certainly better than you need them to be.</p>
+<p>None of this is about distrusting the tools. Use them. They are better at R syntax than I am (at least most of the time) and they are certainly better than you need them to be.</p>
 <p>What they cannot do is know that <code>rent_appartement</code> is measured per square metre, that your municipalities are not equally sized, that 99999 means missing in this file and not in that one, or that the referee will ask about the 40 communes you dropped. That knowledge is the job. The code was never the job.</p>
 
 
@@ -478,7 +477,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/mateomoglia\.github\.io\/2027_eco51432ep\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }

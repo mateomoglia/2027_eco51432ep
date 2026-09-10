@@ -311,8 +311,8 @@ Important
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Always pass the object explicitly, <code>ggsave(filename = ..., plot = p)</code>, rather than relying on “the last plot”. The default silently saves whatever happened to be displayed last, which after a long session is very often not the graph you think it is. This is a silent failure that ends up in a printed paper.</p>
-<p>And always save as <code>.pdf</code> for LaTeX. A vector graphic stays sharp at any zoom, a <code>.png</code> does not, and referees do zoom.</p>
+<p>Always pass the object explicitly, <code>ggsave(filename = ..., plot = p)</code>, rather than relying on “the last plot”. The default silently saves whatever happened to be displayed last, which after a long session may not be the graph you think it is.</p>
+<p>And always save as <code>.pdf</code> for LaTeX. A vector graphic stays sharp at any zoom, a <code>.png</code> does not.</p>
 </div>
 </div>
 </section>
@@ -359,7 +359,7 @@ Important
 </div>
 </div>
 </div>
-<p>R applies its standard colour scheme. Colours can be chosen manually, or taken from a package scale. The most popular package is <code>viridis</code>, which provides many palettes for <code>ggplot</code>. Its palettes are designed to remain readable for people with colour vision deficiency, which concerns roughly 8% of men and 0.5% of women, so in a lecture hall of 40 there is very likely someone who cannot read a red-versus-green graph. Because we mapped <code>colour</code>, we use <code>scale_colour_viridis_d()</code>. The <code>d</code> stands for discrete, as opposed to continuous.</p>
+<p>R applies its standard colour scheme. Colours can be chosen manually, or taken from a package scale. The most popular package is <code>viridis</code>, which provides many palettes for <code>ggplot</code>. Its palettes are designed to remain readable for people with colour vision deficiency, which concerns roughly 8% of men and 0.5% of women, so in a lecture hall of 40 there is very likely someone who cannot read a red-versus-green graph. Because we mapped <code>colour</code>, we use <code>scale_colour_viridis_d()</code>. The <code>d</code> stands for discrete, as opposed to continuous <code>c</code>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(idf_data, <span class="fu">aes</span>(<span class="at">x =</span> log_population)) <span class="sc">+</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> log_rent_appartement, <span class="at">colour =</span> <span class="st">"Apartment"</span>)) <span class="sc">+</span></span>
@@ -374,7 +374,7 @@ Important
 </div>
 </div>
 <p>R offers a number of built-in themes to control the general appearance of the graph (background, axes, minor grids, etc.). Here I use <code>theme_bw()</code>. You can try <code>theme_minimal()</code>, <code>theme_classic()</code>, <code>theme_void()</code>.</p>
-<p>I also set the colours manually. Note that I do not pick them at random: these are two colours from the Okabe-Ito palette, which stays distinguishable under every common form of colour vision deficiency. Overriding <code>viridis</code> is fine, overriding it with red and green is not.</p>
+<p>I also set the colours manually. Note that I do not pick them at random: these are two colours from the Okabe-Ito palette, which stays distinguishable under every common form of colour vision deficiency.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(idf_data, <span class="fu">aes</span>(<span class="at">x =</span> log_population)) <span class="sc">+</span></span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="fu">aes</span>(<span class="at">y =</span> log_rent_appartement, <span class="at">colour =</span> <span class="st">"Apartment"</span>), <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
@@ -397,7 +397,7 @@ Important
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_colour_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"Apartment"</span> <span class="ot">=</span> <span class="st">"#0072B2"</span>, <span class="st">"House"</span> <span class="ot">=</span> <span class="st">"#D55E00"</span>)) <span class="sc">+</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position        =</span> <span class="st">"inside"</span>,</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.15</span>, <span class="fl">0.9</span>),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position.inside =</span> <span class="fu">c</span>(<span class="fl">0.15</span>, <span class="fl">0.9</span>), <span class="co"># This is try-and-fail</span></span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.title           =</span> <span class="fu">element_blank</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
@@ -418,7 +418,7 @@ A word on deprecation warnings
 </div>
 <div class="callout-body-container callout-body">
 <p>Until <code>ggplot2</code> 3.5.0, the way to place a legend inside the panel was <code>legend.position = c(0.15, 0.9)</code>. It still works, but it now prints a deprecation warning telling you to use <code>legend.position.inside</code> instead.</p>
-<p>A deprecation warning is not an error. Your code runs and your graph is correct. It is the package authors telling you that this syntax will stop working in a future version, and giving you the replacement for free. Most of the R code an LLM writes for you was trained on the old syntax, so you will meet these constantly. Read them, fix them once, and move on. Ignoring them for two years is how a project stops running.</p>
+<p>A deprecation warning is not an error. Your code runs and your graph is correct. It is the package authors telling you that this syntax will stop working in a future version, and giving you the replacement for free. Most of the R code an LLM writes for you was trained on the old syntax, so you will meet these at some point. Read them, fix them once, and move on. Ignoring them for two years is how a project stops running.</p>
 </div>
 </div>
 <p>To stick with publication standards, I adapt the axis names and the title.</p>
@@ -806,7 +806,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
+      var filterRegex = new RegExp("https:\/\/mateomoglia\.github\.io\/2027_eco51432ep\/");
     var isInternal = (href) => {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
