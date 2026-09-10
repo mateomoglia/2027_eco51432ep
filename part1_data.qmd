@@ -1,7 +1,7 @@
 ---
 title: "Open data"
 format: html
-editor: visual
+editor: source
 toc: true
 toc-title: ""
 toc-location: right
@@ -44,7 +44,7 @@ As you may know, data come in various formats. Here are some common formats. The
 Many other formats exist, depending on the source or the type of data stored (eg, spatial data). Note that SQL is a database *system* rather than a file format, and you query it rather than open it, with the `DBI` package.
 
 ::: callout-note
-Speed is not the only criterion, and usually not the main one. A `.csv` can be opened by anything, forever, including by a co-author who does not use R. A `.RData` file cannot. For anything you intend to share or archive, prefer `.csv`. For a 20 GB intermediate file that only your own code will ever read, use `.parquet`.
+Speed is not the only criterion, and usually not the main one. A `.csv` can be opened by anything, forever, including by a co-author who does not use R. A `.RData` file cannot. For anything you intend to share or archive, prefer `.csv`. There is a trend to move towards `.parquet` for larger files. 
 :::
 
 ### Open data in R
@@ -66,7 +66,7 @@ data = read.csv2(file = "C:/your/path/data_to_open.csv")
 
 Use the wrong one and R does not complain. It just reads your numeric column as text. Then `log(rent)` throws `non-numeric argument to binary operator` three scripts later, and you have no idea why.
 
-**So: run `str(data)` immediately after every import.** Every column that should be a number must show `num` or `int`. If it shows `chr`, you used the wrong reader. This takes two seconds and it will save you an afternoon at least once this year.
+**So: run `str(data)` immediately after every import.** Every column that should be a number must show `num` or `int`. If it shows `chr`, you used the wrong reader.
 :::
 
 ### Write data
@@ -74,7 +74,7 @@ Use the wrong one and R does not complain. It just reads your numeric column as 
 Once you are done cleaning the data, you might want to save your dataset (this is actually good practice!). Most functions to read data have a writing counterpart. Hence:
 
 ```{r, eval = F}
-write.csv2(data, file = "C:/your/path/name_of_the_dataset.csv", row.names = FALSE)
+write.csv2(data, file = "C:/your/path/temp/name_of_the_dataset.csv", row.names = FALSE)
 ```
 
 Note `row.names = FALSE`. Without it, R writes an extra unnamed column containing 1, 2, 3, ... and when you read the file back you get a mysterious column called `X`. Every R user has met it. Now you know where it comes from.

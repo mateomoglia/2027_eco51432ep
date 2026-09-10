@@ -1,7 +1,6 @@
 ---
 title: "Spatial data"
 format: html
-editor: visual
 toc: true
 toc-title: ""
 toc-location: right

@@ -1,7 +1,7 @@
 ---
 title: "First hands on R"
 format: html
-editor: visual
+editor: source
 toc: true
 toc-title: ""
 toc-location: right
@@ -32,7 +32,7 @@ For this first part, we are going to
 
 R is a free and open-source software used in many contexts: data cleaning, data visualisation, econometrics, machine and deep learning, among others. It is supported by a lively and active user community. R is an **object-based** language, meaning that we are going to manipulate objects through a series of commands.
 
-R can be used directly from a command terminal, but we prefer to use RStudio, an IDE, to make our lives easier. An IDE is an interface that eases the use of a software. The most popular one is `RStudio`. To use it, we need to:
+R can be used directly from a command terminal, but we prefer to use RStudio, an IDE, to make our lives easier. An IDE is an interface that eases the use of a software (VSCode is one of the most popular and is suitable for virtually every language). The most popular one for R is `RStudio`. To use it, we need to:
 
 1.  Download R
 2.  Then, download RStudio
@@ -47,7 +47,7 @@ Before jumping to coding *per se*, let me recall some best practices when perfor
 -   Research reproducibility is a high-stake aspect of research
 -   It is probably more pleasant to work in a tidy and clean environment than in a messy one
 
-There is also a reason that is specific to this year. When an LLM writes half of your code, the only thing that still distinguishes a good empirical economist from a bad one is the ability to *check*. Checking is impossible in a folder where you cannot tell which file produced which table.
+When an LLM writes half of your code, the only thing that still distinguishes a good empirical economist from a bad one is the ability to *check*. Checking is impossible in a folder where you cannot tell which file produced which table.
 
 ### Folder organization
 
@@ -97,7 +97,7 @@ A typical tip is to choose simple and short titles for the files and the scripts
 ::: callout-tip
 Avoid at all cost using spaces or special characters in your file names. Prefer an underscore instead.
 
-And never, ever, name a file `code_final.R`, then `code_final_v2.R`, then `code_final_v2_FINAL.R`. Either use git, or keep exactly one file and let your folder carry the date. Sequences of "final" files are how people lose a chapter.
+And never, ever, name a file `code_final.R`, then `code_final_v2.R`, then `code_final_v2_FINAL.R`. Either use `git` or any versioning system, or keep exactly one file and let your folder carry the date
 :::
 
 ### When writing code
@@ -110,7 +110,7 @@ And never, ever, name a file `code_final.R`, then `code_final_v2.R`, then `code_
 
 -   Moreover, especially for large projects, you want to have different scripts. Always keep scripts short and with clear names. For instance `1_clean_data.R`, `2_import_wages.R`, `3_merge_datasets.R`, and `4_data_analysis.R`.
 
--   Finish every script with `sessionInfo()`. It prints your R version and every package version you used. In two years, when a result cannot be replicated, that single line is what tells you why.
+-   For more advanced users, finish every script with `sessionInfo()`, or keep precisely track of every packages (and their versions you used). It prints your R version and every package version you used.
 
 ## First step in R/Rstudio
 
@@ -138,7 +138,7 @@ And never, ever, name a file `code_final.R`, then `code_final_v2.R`, then `code_
 
 To know more about a function, simply type `?function` in the console. This is the only source that cannot be wrong: it is written by the person who wrote the function. Internet is your friend too, and Stack Overflow answers are usually attached to a version number and a discussion, which is worth a lot.
 
-And of course, ChatGPT and other LLMs are very good at R. I learned R before they existed, so I still reach for the documentation first. You did not, and you will not. That is fine. What follows is not a warning against using them, it is a method for using them well.
+And of course, ChatGPT and other LLMs are very good at R. I learned R before they existed, so I still reach for the documentation first. You did not and probably will not. That is fine, but some warnings apply!
 
 ::: callout-warning
 ## Using an LLM well
@@ -146,7 +146,7 @@ And of course, ChatGPT and other LLMs are very good at R. I learned R before the
 An LLM will almost always return code that runs. Running is not the same as being correct. Before you keep any suggested code:
 
 1.  **Read it line by line and say out loud what each line does.** If you cannot, do not use it. This is the whole rule, the other two are just how you enforce it.
-2.  **Inspect the object after every step**, with `dim()`, `str()`, `summary()`, `head()`. Compare with what you expected *before* you ran it. Form the expectation first, then look. Looking first and then deciding you expected that is not a check.
+2.  **Inspect the object after every chunk**, with `dim()`, `str()`, `summary()`, `head()`. Compare with what you expected *before* you ran it. Form the expectation first, then look. Looking first and then deciding you expected that is not a check.
 3.  **Verify the function exists and takes those arguments**, with `?function`. LLMs invent plausible argument names, and a plausible argument name is the hardest kind of bug to see.
 
 Two failure modes matter for us:
@@ -154,14 +154,14 @@ Two failure modes matter for us:
 -   A **loud failure** throws an error. It costs you five minutes and it is doing you a favour.
 -   A **silent failure** returns a number that is wrong. It costs you a chapter.
 
-Silent failures live in four places, and we will meet all four in this course: joins, missing values, decimal separators, and coordinate systems.
+Silent failures can live in many place. We will meet four very common ones in this course: joins, missing values, decimal separators, and coordinate systems.
 
-One last thing. An LLM has no idea what your variables mean. It will happily divide a rent per square metre by a headcount and call it `rent_per_capita`. It is not wrong about R. It is wrong about economics, and only you can catch that.
+One last thing. An LLM has **no idea** what your variables mean. It will happily divide a rent per square metre by a headcount and call it `rent_per_capita`. It is not wrong about R. It is wrong about economics, and only you can catch that.
 :::
 
 ### Reading an error message
 
-Half of learning R is learning to read six error messages. They look intimidating because they are terse, not because they are complicated. Read the **last line first**, then find the object name it mentions.
+Learning R, or any language, is also learning to read error messages. They look intimidating because they are terse, not because they are complicated. Read the **last line first**, then find the object name it mentions.
 
 | Message | What it actually means |
 |-----------------------------------|-------------------------------------|
@@ -335,7 +335,7 @@ new_data = iris %>%
 nrow(new_data) # 50, since iris has 50 flowers per species
 ```
 
-Two things worth noticing. The exercise says "bigger than 3" and the code writes `>= 3`, which is not the same thing. Check which one you used, and check how many observations it moves. Second, `filter(Species == "setosa")` uses a double equals sign: one `=` assigns, two `==` compare. This is the single most common typo in R.
+Two things worth noticing. The exercise says "bigger than 3" and the code writes `>= 3`, which is not the same thing. Check which one you used, and check how many observations it moves. Second, `filter(Species == "setosa")` uses a double equals sign: one `=` assigns, two `==` compare.
 :::
 
 Now, we want to simply print the number of observations for each value of `large_width`. To do so:

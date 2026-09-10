@@ -2,6 +2,8 @@ project:
   type: website
   output-dir: _site
 
+editor: source
+
 execute:
   freeze: auto
 

@@ -1,7 +1,6 @@
 ---
 title: "Debugging clinic"
 format: html
-editor: visual
 toc: true
 toc-title: ""
 toc-location: right
@@ -9,12 +8,10 @@ toc-location: right
 
 ## Roadmap
 
-This is the part of the course that justifies the rest of it. We are going to:
+We are going to:
 
 -   Find four mistakes in a script that runs perfectly
 -   Check that your own project is reproducible, by having someone else run it
-
-You have spent two sessions learning verbs you could have got from a chatbot in four seconds. What follows is the part a chatbot cannot do for you, because it requires knowing what your variables mean.
 
 ## Why this exists
 
@@ -170,6 +167,6 @@ Common findings: a package loaded in the console but never in the script, an obj
 
 ## A closing note
 
-None of this is about distrusting the tools. Use them. They are better at R syntax than I am and they are certainly better than you need them to be.
+None of this is about distrusting the tools. Use them. They are better at R syntax than I am (at least most of the time) and they are certainly better than you need them to be.
 
 What they cannot do is know that `rent_appartement` is measured per square metre, that your municipalities are not equally sized, that 99999 means missing in this file and not in that one, or that the referee will ask about the 40 communes you dropped. That knowledge is the job. The code was never the job.

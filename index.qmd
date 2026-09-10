@@ -1,18 +1,16 @@
 ---
 title: "Welcome to this class!"
 format: html
-editor: visual
+editor: source
 ---
 
 This website will walk you through the tutorials for the *Introduction to R* course of Ecole Polytechnique's Master program.
 
-You are all fluent users of large language models, and an LLM will write R code faster than any of us. So this class is not about teaching you to type code from memory. It has three objectives:
+This class is not only about teaching you the R language, but also a way to interact with LLM-based coding, and research reproducibility. It has three objectives:
 
-1.  **Read, run and modify** R code rather than write it from scratch.
-2.  **Debug** code, and in particular diagnose the errors that do not announce themselves, including in code produced by an LLM.
+1.  **Read, understand, run, and modify** R code rather than write it from scratch.
+2.  **Debug** code, and in particular diagnose the errors that do not announce themselves, including in code produced by an LLM
 3.  **Organise a project** so that someone else can reproduce your results from your folder alone.
-
-The statistics and the econometrics you already know. What we add here is the craft.
 
 > **Practical information**
 >
@@ -26,13 +24,7 @@ The statistics and the econometrics you already know. What we add here is the cr
 >
 > **Data**: Data are [here](https://drive.google.com/drive/folders/1mNXjRVWK4-5ZcgrYdNgevgxV25byMHPL?usp=sharing)
 >
-> **Evaluation**: No exam. At the end of session 2, send me a zipped project folder. It must contain your code, your data and your outputs, and it must run from a clean R session on a machine that is not yours. That is the whole test, and it is graded pass or fail.
-
-::: {.callout-important}
-## The one rule of this class
-
-Code that runs is not code that is correct. A loud failure throws an error and costs you five minutes. A silent failure returns a number that is wrong and costs you a chapter. Everything we do here is aimed at the second kind.
-:::
+> **Evaluation**: No exam. Attendance is mandatory though.
 
 ::: {.callout-caution collapse="true"}
 ## Log
@@ -73,7 +65,7 @@ Code that runs is not code that is correct. A loud failure throws an error and c
     -   Compute distances
     -   Maps
 
-During sessions, I will walk you through all materials covered here. Exercises are marked in green and you are required to perform them. Every exercise has a solution you can unfold, but unfold it after you have tried, not before. Copying a solution you have not attempted is exactly the habit this class exists to break.
+During sessions, I will walk you through all materials covered here. Exercises are marked in green and you are required to perform them. Every exercise has a solution you can unfold, but unfold it after you have tried, not before.
 
 ## About this site and my inspirations
 

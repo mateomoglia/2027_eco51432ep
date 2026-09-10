@@ -1,7 +1,7 @@
 ---
 title: "Descriptive statistics"
 format: html
-editor: visual
+editor: source
 toc: true
 toc-title: ""
 toc-location: right
@@ -43,7 +43,7 @@ The number of observations is not a formality. A mean computed on 1,281 municipa
 
 ### Implementation
 
-In R, descriptive statistics can be implemented using built-in functions such as `mean()`, `median()`, `sd()` and `summary()`, or through the `dplyr` package for more flexible and readable workflows. The key function is `summarize()` (or `summarise()`, R is relatively flexible between UK and US English).
+In R, descriptive statistics can be implemented using built-in functions such as `mean()`, `median()`, `sd()` and `summary()`, or through the `dplyr` package for more flexible and readable workflows. The key function is `summarize()` (or `summarise()`, R is relatively flexible between UK and US English. Same applies for colour *vs* color).
 
 If you want to summarise by group, make sure to group your data first using `group_by()`.
 
@@ -200,7 +200,7 @@ Note the number of observations in each regression, and compare it with `nrow(id
 ## Export to `.tex`
 
 ::: callout-important
-If you are not familiar with LaTeX, I warmly recommend you learn it. The learning curve is gentle: a couple of hours is enough for the basics. The online community is superb and LLMs are extremely good at it. A good starting point is Overleaf and their guide to [learn LaTeX in 30 minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes).
+If you are not familiar with LaTeX, I warmly recommend you learn it. The learning curve is steep: a couple of hours is enough for the basics. The online community is superb and LLMs are extremely good at it. A good starting point is Overleaf and their guide to [learn LaTeX in 30 minutes](https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes).
 :::
 
 Several libraries exist to export tables in `.tex` format (or plain text, or html). Among the most popular, we use `stargazer`, which is flexible and well suited to descriptive statistics, `knitr` for exporting data frames, and the `etable` function from `fixest`.
@@ -208,7 +208,7 @@ Several libraries exist to export tables in `.tex` format (or plain text, or htm
 ::: callout-note
 ## Why export instead of copy-pasting
 
-Because a copy-pasted table is a table nobody can regenerate. If a referee asks you to drop Paris, you want to change one line and re-run, not retype 40 numbers and introduce two typos. Every number in your paper should be traceable to a line of code, without exception. This is the single habit that separates a reproducible project from a stressful one.
+Because a copy-pasted table is a table nobody can regenerate. If a referee asks you to drop Paris, you want to change one line and re-run, not retype 40 numbers and introduce two typos. Every number in your paper should be traceable to a line of code, without exception.
 :::
 
 1.  Export the population count
@@ -272,7 +272,7 @@ export = tab %>%
 writeLines(export, paste0(path, "/output/cost_size.tex"))
 ```
 
-Let's break down the function. The line worth dwelling on is `pack_rows(index = table(tab$city_size))`. The obvious way to write this is to hardcode the row numbers of each group, 1 to 2, 3 to 4, and so on. That works exactly once, and silently mislabels every row the day you switch from five size groups to four. Computing the index from the data means the table cannot go out of sync with the data it describes.
+Let's break down the function. The line worth dwelling on is `pack_rows(index = table(tab$city_size))`. The obvious way to write this is to hardcode the row numbers of each group, 1 to 2, 3 to 4, and so on. Computing the index from the data means the table cannot go out of sync with the data it describes.
 
 3.  Export the regressions
 
